@@ -203,8 +203,9 @@ jobs:
           curl -LO https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2022-07-31-12-37/ffmpeg-n4.4.2-2-g7ffb7d4b04-linux64-gpl-shared-4.4.tar.xz
           tar xvf ffmpeg-n4.4.2-2-g7ffb7d4b04-linux64-gpl-shared-4.4.tar.xz
           cp -ar ffmpeg-n4.4.2-2-g7ffb7d4b04-linux64-gpl-shared-4.4/lib/* thirdparty/Library/
-          apt-get --print-uris -y install ocl-icd-opencl-dev libva-drm2 libva-x11-2 libigfxcmrt7 libass9 libharfbuzz0b | grep ^\' | cut -d\' -f2 > downloads.list
+          apt-get --print-uris -y install ocl-icd-opencl-dev libva-drm2 libva-x11-2 libigfxcmrt7 libass9 | grep ^\' | cut -d\' -f2 > downloads.list
           wget --input-file downloads.list
+          apt-get download libharfbuzz0b libgraphite2-3 libglib2.0-0 libpcre3
           ls -1 | grep [.]deb >> all_debs.txt && cat all_debs.txt | while read fn; do dpkg-deb -x $fn `pwd`/thirdparty/Library; done && rm all_debs.txt
           find thirdparty/Library/*.so* -not -type l -not -type d | while read fn; do patchelf --set-rpath '$ORIGIN:$ORIGIN/../lib:$ORIGIN/../Library' $fn; done
           cp -ar thirdparty/Library/usr/lib/x86_64-linux-gnu/* thirdparty/Library/
