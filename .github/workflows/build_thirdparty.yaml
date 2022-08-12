@@ -18,28 +18,28 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
 
       # サードパーティーライブラリの配置フォルダを作成
-      - run: mkdir thirdparty
-
+      - name: Create thirdparty folder
+        run: mkdir thirdparty/
 
       # tsreadex のビルド
       - name: Build tsreadex
         run: |
           git clone https://github.com/xtne6f/tsreadex
-          cd tsreadex
+          cd tsreadex/
           msbuild tsreadex.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          mkdir ..\thirdparty\tsreadex\
-          copy x64\Release\tsreadex.exe ..\thirdparty\tsreadex\
-          copy License.txt ..\thirdparty\tsreadex\
+          mkdir ../thirdparty/tsreadex/
+          cp x64/Release/tsreadex.exe ../thirdparty/tsreadex/
+          cp License.txt ../thirdparty/tsreadex/
 
       # psisiarc のビルド
       - name: Build psisiarc
         run: |
           git clone https://github.com/xtne6f/psisiarc
-          cd psisiarc
+          cd psisiarc/
           msbuild psisiarc.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          mkdir ..\thirdparty\psisiarc\
-          copy x64\Release\psisiarc.exe ..\thirdparty\psisiarc\
-          copy License.txt ..\thirdparty\psisiarc\
+          mkdir ../thirdparty/psisiarc/
+          cp x64/Release/psisiarc.exe ../thirdparty/psisiarc/
+          cp License.txt ../thirdparty/psisiarc/
 
       # Golang 環境のセットアップ
       - name: Setup Golang environment
@@ -51,11 +51,11 @@ jobs:
       - name: Build Akebi
         run: |
           git clone https://github.com/tsukumijima/Akebi
-          cd Akebi
+          cd Akebi/
           go build -ldflags="-s -w" -a -o "akebi-https-server.exe" "./https-server/"
-          mkdir ..\thirdparty\Akebi\
-          copy akebi-https-server.exe ..\thirdparty\Akebi\
-          copy License.txt ..\thirdparty\Akebi\
+          mkdir ../thirdparty/Akebi/
+          cp akebi-https-server.exe ../thirdparty/Akebi/
+          cp License.txt ../thirdparty/Akebi/
 
       # FFmpeg・QSVEncC・NVEncC・VCEEncC のアーカイブのダウンロード
       # 実際にビルドすると時間がかかりすぎるので、アーカイブをダウンロードして配置する
@@ -65,31 +65,31 @@ jobs:
           # FFmpeg のアーカイブのダウンロード
           curl -LO https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2022-07-31-12-37/ffmpeg-n5.1-2-g915ef932a3-win64-gpl-shared-5.1.zip
           7z x -y ffmpeg-n5.1-2-g915ef932a3-win64-gpl-shared-5.1.zip
-          mkdir thirdparty\FFmpeg\
-          copy ffmpeg-n5.1-2-g915ef932a3-win64-gpl-shared-5.1\bin\* thirdparty\FFmpeg\
-          copy ffmpeg-n5.1-2-g915ef932a3-win64-gpl-shared-5.1\LICENSE.txt thirdparty\FFmpeg\License.txt
-          del thirdparty\FFmpeg\ffplay.exe
+          mkdir thirdparty/FFmpeg/
+          cp ffmpeg-n5.1-2-g915ef932a3-win64-gpl-shared-5.1/bin/* thirdparty/FFmpeg/
+          cp ffmpeg-n5.1-2-g915ef932a3-win64-gpl-shared-5.1/LICENSE.txt thirdparty/FFmpeg/License.txt
+          rm thirdparty/FFmpeg/ffplay.exe
 
           # QSVEncC のアーカイブのダウンロード
           curl -LO https://github.com/rigaya/QSVEnc/releases/download/7.08/QSVEncC_7.08_x64.7z
-          7z x -y -o"thirdparty\QSVEncC" QSVEncC_7.08_x64.7z
-          del thirdparty\QSVEncC\hdr10plus_gen.exe
-          move thirdparty\QSVEncC\QSVEncC64.exe thirdparty\QSVEncC\QSVEncC.exe
-          curl -L -o thirdparty\QSVEncC\License.txt https://raw.githubusercontent.com/rigaya/QSVEnc/master/license.txt
+          7z x -y -o"thirdparty/QSVEncC" QSVEncC_7.08_x64.7z
+          rm thirdparty/QSVEncC/hdr10plus_gen.exe
+          mv  thirdparty/QSVEncC/QSVEncC64.exe thirdparty/QSVEncC/QSVEncC.exe
+          curl -L -o thirdparty/QSVEncC/License.txt https://raw.githubusercontent.com/rigaya/QSVEnc/master/license.txt
 
           # NVEncC のアーカイブのダウンロード
           curl -LO https://github.com/rigaya/NVEnc/releases/download/6.07/NVEncC_6.07_x64.7z
-          7z x -y -o"thirdparty\NVEncC" NVEncC_6.07_x64.7z
-          del thirdparty\NVEncC\hdr10plus_gen.exe
-          move thirdparty\NVEncC\NVEncC64.exe thirdparty\NVEncC\NVEncC.exe
-          curl -L -o thirdparty\NVEncC\License.txt https://raw.githubusercontent.com/rigaya/NVEnc/master/NVEnc_license.txt
+          7z x -y -o"thirdparty/NVEncC" NVEncC_6.07_x64.7z
+          rm thirdparty/NVEncC/hdr10plus_gen.exe
+          mv  thirdparty/NVEncC/NVEncC64.exe thirdparty/NVEncC/NVEncC.exe
+          curl -L -o thirdparty/NVEncC/License.txt https://raw.githubusercontent.com/rigaya/NVEnc/master/NVEnc_license.txt
 
           # VCEEncC のアーカイブのダウンロード
           curl -LO https://github.com/rigaya/VCEEnc/releases/download/7.03/VCEEncC_7.03_x64.7z
-          7z x -y -o"thirdparty\VCEEncC" VCEEncC_7.03_x64.7z
-          del thirdparty\VCEEncC\hdr10plus_gen.exe
-          move thirdparty\VCEEncC\VCEEncC64.exe thirdparty\VCEEncC\VCEEncC.exe
-          curl -L -o thirdparty\VCEEncC\License.txt https://raw.githubusercontent.com/rigaya/VCEEnc/master/VCEEnc_license.txt
+          7z x -y -o"thirdparty/VCEEncC" VCEEncC_7.03_x64.7z
+          rm thirdparty/VCEEncC/hdr10plus_gen.exe
+          mv  thirdparty/VCEEncC/VCEEncC64.exe thirdparty/VCEEncC/VCEEncC.exe
+          curl -L -o thirdparty/VCEEncC/License.txt https://raw.githubusercontent.com/rigaya/VCEEnc/master/VCEEnc_license.txt
 
       # Python Embeddable Package のダウンロードと pip / pipenv のインストール
       - name: Download Python Embeddable Package
@@ -97,15 +97,15 @@ jobs:
 
           # Python 本体のダウンロード
           curl -LO https://www.python.org/ftp/python/3.10.6/python-3.10.6-embed-amd64.zip
-          7z x -y -o"thirdparty\Python" python-3.10.6-embed-amd64.zip
-          "C:\Program Files\Git\bin\bash.exe" -c "sed -i -e 's/#import/import/' thirdparty/Python/python310._pth"
+          7z x -y -o"thirdparty/Python" python-3.10.6-embed-amd64.zip
+          C:/"Program Files"/Git/bin/bash.exe -c "sed -i -e 's/#import/import/' thirdparty/Python/python310._pth"
 
           # pip のインストール
           curl -LO https://bootstrap.pypa.io/get-pip.py
-          thirdparty\Python\python.exe get-pip.py
+          thirdparty/Python/python.exe get-pip.py
 
           # pipenv のインストール
-          thirdparty\Python\Scripts\pip.exe install pipenv
+          thirdparty/Python/Scripts/pip.exe install pipenv
 
       # サードパーティーライブラリを 7z で圧縮
       # ref: https://axelstudios.github.io/7z/#!/
