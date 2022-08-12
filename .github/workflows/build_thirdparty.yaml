@@ -111,7 +111,7 @@ jobs:
       # ref: https://axelstudios.github.io/7z/#!/
       - name: Compress Thirdparty Libraries
         run: |
-          7z a -m0=LZMA2 -mx=9 -md=128m -mfb=128 -ms=16g -mmt=on thirdparty-windows2.7z thirdparty
+          7z a -m0=LZMA2 -mx=9 -md=128m -mfb=128 -ms=16g -mmt=on thirdparty-windows.7z thirdparty
 
       # 7z で圧縮したサードパーティーライブラリを Artifact としてアップロード
       - name: Upload Artifact
