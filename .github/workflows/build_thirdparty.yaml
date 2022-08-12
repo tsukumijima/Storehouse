@@ -207,10 +207,10 @@ jobs:
           wget --input-file downloads.list
           apt-get download libharfbuzz0b libgraphite2-3 libglib2.0-0 libpcre3
           ls -1 | grep [.]deb >> all_debs.txt && cat all_debs.txt | while read fn; do dpkg-deb -x $fn `pwd`/thirdparty/Library; done && rm all_debs.txt
-          find thirdparty/Library/*.so* -not -type l -not -type d | while read fn; do patchelf --set-rpath '$ORIGIN:$ORIGIN/../lib:$ORIGIN/../Library' $fn; done
           cp -ar thirdparty/Library/usr/lib/x86_64-linux-gnu/* thirdparty/Library/
           rm -rf thirdparty/Library/usr/
           rm -rf thirdparty/Library/pkgconfig
+          find thirdparty/Library/*.so* -not -type l -not -type d | while read fn; do patchelf --set-rpath '$ORIGIN:$ORIGIN/../lib:$ORIGIN/../Library' $fn; done
           find thirdparty/Library/*.so* -not -type l -not -type d | xargs chmod a+x
 
           # QSVEncC のアーカイブのダウンロード
