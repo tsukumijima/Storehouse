@@ -20,12 +20,13 @@ jobs:
       # サードパーティーライブラリの配置フォルダを作成
       - run: mkdir thirdparty
 
+
       # tsreadex のビルド
       - name: Build tsreadex
         run: |
           git clone https://github.com/xtne6f/tsreadex
           cd tsreadex
-          msbuild tsreadex.sln /t:Build /p:Configuration=Release /p:Platform=x64
+          msbuild tsreadex.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
           mkdir ..\thirdparty\tsreadex\
           copy x64\Release\tsreadex.exe ..\thirdparty\tsreadex\
           copy License.txt ..\thirdparty\tsreadex\
@@ -35,7 +36,7 @@ jobs:
         run: |
           git clone https://github.com/xtne6f/psisiarc
           cd psisiarc
-          msbuild psisiarc.sln /t:Build /p:Configuration=Release /p:Platform=x64
+          msbuild psisiarc.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
           mkdir ..\thirdparty\psisiarc\
           copy x64\Release\psisiarc.exe ..\thirdparty\psisiarc\
           copy License.txt ..\thirdparty\psisiarc\
