@@ -18,7 +18,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
 
       # サードパーティーライブラリの配置フォルダを作成
-      - name: Create thirdparty folder
+      - name: Create Thirdparty Folder
         run: mkdir thirdparty/
 
       # tsreadex のビルド
@@ -42,13 +42,13 @@ jobs:
           cp License.txt ../thirdparty/psisiarc/
 
       # Golang 環境のセットアップ
-      - name: Setup Golang environment
+      - name: Setup Golang Environment
         uses: actions/setup-go@v3
         with:
           go-version: '1.18.1'
 
       # Akebi HTTPS Server のビルド
-      - name: Build Akebi
+      - name: Build Akebi HTTPS Server
         run: |
           git clone https://github.com/tsukumijima/Akebi
           cd Akebi/
@@ -59,7 +59,7 @@ jobs:
 
       # FFmpeg・QSVEncC・NVEncC・VCEEncC のアーカイブのダウンロード
       # 実際にビルドすると時間がかかりすぎるので、アーカイブをダウンロードして配置する
-      - name: Download Encoders
+      - name: Download and Deploy Encoder Archives
         run: |
 
           # FFmpeg のアーカイブのダウンロード
@@ -92,7 +92,7 @@ jobs:
           curl -L -o thirdparty/VCEEncC/License.txt https://raw.githubusercontent.com/rigaya/VCEEnc/master/VCEEnc_license.txt
 
       # Python Embeddable Package のダウンロードと pip / pipenv のインストール
-      - name: Download Python Embeddable Package
+      - name: Install Python Embeddable Package & pip & pipenv
         run: |
 
           # Python 本体のダウンロード
@@ -114,7 +114,7 @@ jobs:
           7z a -m0=LZMA2 -mx=9 -md=128m -mfb=128 -ms=16g -mmt=on thirdparty-windows.7z thirdparty
 
       # 7z で圧縮したサードパーティーライブラリを Artifact としてアップロード
-      - name: Upload Artifact
+      - name: Upload Thirdparty Libraries as Artifact
         uses: actions/upload-artifact@v3
         with:
           name: thirdparty-windows.7z
@@ -127,7 +127,7 @@ jobs:
     steps:
 
       # サードパーティーライブラリの配置フォルダを作成
-      - name: Create thirdparty folder
+      - name: Create Thirdparty Folder
         run: mkdir thirdparty/
 
       # tsreadex のビルド
@@ -153,13 +153,13 @@ jobs:
           cp License.txt ../thirdparty/psisiarc/
 
       # Golang 環境のセットアップ
-      - name: Setup Golang environment
+      - name: Setup Golang Environment
         uses: actions/setup-go@v3
         with:
           go-version: '1.18.1'
 
       # Akebi HTTPS Server のビルド
-      - name: Build Akebi
+      - name: Build Akebi HTTPS Server
         run: |
           git clone https://github.com/tsukumijima/Akebi
           cd Akebi/
@@ -169,9 +169,9 @@ jobs:
           chmod a+x ../thirdparty/Akebi/akebi-https-server.elf
           cp License.txt ../thirdparty/Akebi/
 
-      # FFmpeg・QSVEncC・NVEncC・VCEEncC のアーカイブのダウンロード
-      # 実際にビルドすると時間がかかりすぎるので、アーカイブをダウンロードして配置する
-      - name: Download Encoders
+      # FFmpeg・QSVEncC・NVEncC・VCEEncC のアーカイブのダウンロードと配置
+      # ドライバさえ入っていればスタンドアローンで実行できるように構成を工夫している
+      - name: Download and Deploy Encoder Archives
         run: |
 
           # p7zip のインストール
@@ -248,7 +248,7 @@ jobs:
           7z a -txz -m0=LZMA2 -mx=9 -md=128m -mfb=128 -mmt=on thirdparty-linux.tar.xz thirdparty-linux.tar
 
       # 7z で圧縮したサードパーティーライブラリを Artifact としてアップロード
-      - name: Upload Artifact
+      - name: Upload Thirdparty Libraries as Artifact
         uses: actions/upload-artifact@v3
         with:
           name: thirdparty-linux.tar.xz
