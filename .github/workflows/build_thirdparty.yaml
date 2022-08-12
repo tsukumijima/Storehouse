@@ -243,7 +243,7 @@ jobs:
       - name: Compress Thirdparty Libraries
         run: |
           tar -cvf thirdparty.tar thirdparty
-          7z a -t=xz -m0=LZMA2 -mx=9 -md=128m -mfb=128 -ms=16g -mmt=on thirdparty-linux.tar.7z thirdparty.tar
+          7z a -m0=LZMA2 -mx=9 -md=128m -mfb=128 -ms=16g -mmt=on thirdparty-linux.tar.7z thirdparty.tar
 
       # 7z で圧縮したサードパーティーライブラリを Artifact としてアップロード
       - name: Upload Artifact
