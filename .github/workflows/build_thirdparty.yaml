@@ -9,7 +9,7 @@ jobs:
 
   # Windows 向けのサードパーティーライブラリのビルド
   build_windows:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
 
@@ -91,23 +91,20 @@ jobs:
           mv thirdparty/VCEEncC/VCEEncC64.exe thirdparty/VCEEncC/VCEEncC.exe
           curl -L -o thirdparty/VCEEncC/License.txt https://raw.githubusercontent.com/rigaya/VCEEnc/master/VCEEnc_license.txt
 
-      # Python Embeddable Package のダウンロードと pip / pipenv のインストール
-      - name: Install Python Embeddable Package & pip & pipenv
+      # Python Standalone Builds のダウンロードと pipenv のインストール
+      - name: Install Python Standalone Builds & pip & pipenv
         run: |
 
           # Python 本体のダウンロード
-          curl -LO https://www.python.org/ftp/python/3.10.6/python-3.10.6-embed-amd64.zip
-          7z x -y -o"thirdparty/Python" python-3.10.6-embed-amd64.zip
-          C:/"Program Files"/Git/bin/bash.exe -c "sed -i -e 's/#import/import/' thirdparty/Python/python310._pth"
-
-          # pip のインストール
-          curl -LO https://bootstrap.pypa.io/get-pip.py
-          thirdparty/Python/python.exe get-pip.py
+          curl -L -o python.tar.gz https://github.com/indygreg/python-build-standalone/releases/download/20220802/cpython-3.10.6+20220802-x86_64-pc-windows-msvc-shared-install_only.tar.gz
+          tar xvf python.tar.gz
+          mv python/ thirdparty/Python/
 
           # pipenv のインストール
-          thirdparty/Python/Scripts/pip.exe install pipenv
+          thirdparty/Python/python.exe -m pip install pipenv==2022.8.15
 
       # サードパーティーライブラリを 7z で圧縮
+      # ファイルサイズ縮減のため、圧縮をかなり強めに掛けている
       # ref: https://axelstudios.github.io/7z/#!/
       - name: Compress Thirdparty Libraries
         run: |
@@ -239,11 +236,24 @@ jobs:
           patchelf --set-rpath '$ORIGIN:$ORIGIN/../lib:$ORIGIN/../Library' thirdparty/VCEEncC/VCEEncC.elf
           curl -L -o thirdparty/VCEEncC/License.txt https://raw.githubusercontent.com/rigaya/VCEEnc/master/VCEEnc_license.txt
 
+      # Python Standalone Builds のダウンロードと pipenv のインストール
+      - name: Install Python Standalone Builds & pip & pipenv
+        run: |
+
+          # Python 本体のダウンロード
+          curl -L -o python.tar.gz https://github.com/indygreg/python-build-standalone/releases/download/20220802/cpython-3.10.6+20220802-x86_64-unknown-linux-gnu-install_only.tar.gz
+          tar xvf python.tar.gz
+          mv python/ thirdparty/Python/
+
+          # pipenv のインストール
+          thirdparty/Python/bin/python -m pip install pipenv==2022.8.15
+
       # サードパーティーライブラリを 7z で圧縮
+      # ファイルサイズ縮減のため、圧縮をかなり強めに掛けている
       # ref: https://axelstudios.github.io/7z/#!/
       - name: Compress Thirdparty Libraries
         run: |
-          tar -cvf thirdparty-linux.tar thirdparty
+          tar cvf thirdparty-linux.tar thirdparty
           7z a -txz -m0=LZMA2 -mx=9 -md=128m -mfb=128 -mmt=on thirdparty-linux.tar.xz thirdparty-linux.tar
 
       # 7z で圧縮したサードパーティーライブラリを Artifact としてアップロード
