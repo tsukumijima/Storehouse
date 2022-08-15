@@ -81,15 +81,15 @@ jobs:
           curl -L -o thirdparty/QSVEncC/License.txt https://raw.githubusercontent.com/rigaya/QSVEnc/master/license.txt
 
           # NVEncC のアーカイブのダウンロード
-          curl -LO https://github.com/rigaya/NVEnc/releases/download/6.07/NVEncC_6.07_x64.7z
-          7z x -y -o"thirdparty/NVEncC" NVEncC_6.07_x64.7z
+          curl -LO https://github.com/rigaya/NVEnc/releases/download/6.08/NVEncC_6.08_x64.7z
+          7z x -y -o"thirdparty/NVEncC" NVEncC_6.08_x64.7z
           rm thirdparty/NVEncC/hdr10plus_gen.exe
           mv thirdparty/NVEncC/NVEncC64.exe thirdparty/NVEncC/NVEncC.exe
           curl -L -o thirdparty/NVEncC/License.txt https://raw.githubusercontent.com/rigaya/NVEnc/master/NVEnc_license.txt
 
           # VCEEncC のアーカイブのダウンロード
-          curl -LO https://github.com/rigaya/VCEEnc/releases/download/7.03/VCEEncC_7.03_x64.7z
-          7z x -y -o"thirdparty/VCEEncC" VCEEncC_7.03_x64.7z
+          curl -LO https://github.com/rigaya/VCEEnc/releases/download/7.04/VCEEncC_7.04_x64.7z
+          7z x -y -o"thirdparty/VCEEncC" VCEEncC_7.04_x64.7z
           rm thirdparty/VCEEncC/hdr10plus_gen.exe
           mv thirdparty/VCEEncC/VCEEncC64.exe thirdparty/VCEEncC/VCEEncC.exe
           curl -L -o thirdparty/VCEEncC/License.txt https://raw.githubusercontent.com/rigaya/VCEEnc/master/VCEEnc_license.txt
@@ -225,9 +225,8 @@ jobs:
           curl -L -o thirdparty/QSVEncC/License.txt https://raw.githubusercontent.com/rigaya/QSVEnc/master/license.txt
 
           # NVEncC のアーカイブのダウンロード
-          ## 2022/08 時点で Linux 版の NVEncC 6.02 以降にはエンコードが安定しない問題がある (近日中に修正される予定)
-          curl -LO https://github.com/rigaya/NVEnc/releases/download/6.01/nvencc_6.01_Ubuntu20.04_amd64.deb
-          7z x -y nvencc_6.01_Ubuntu20.04_amd64.deb && tar xvf data.tar
+          curl -LO https://github.com/rigaya/NVEnc/releases/download/6.08/nvencc_6.08_Ubuntu20.04_amd64.deb
+          7z x -y nvencc_6.08_Ubuntu20.04_amd64.deb && tar xvf data.tar
           mkdir thirdparty/NVEncC/
           cp usr/bin/nvencc thirdparty/NVEncC/NVEncC.elf
           chmod a+x thirdparty/NVEncC/NVEncC.elf
@@ -235,9 +234,8 @@ jobs:
           curl -L -o thirdparty/NVEncC/License.txt https://raw.githubusercontent.com/rigaya/NVEnc/master/NVEnc_license.txt
 
           # VCEEncC のアーカイブのダウンロード
-          ## 2022/08 時点で Linux 版の VCEEncC 7.01 以降にはエンコードが安定しない問題がある (近日中に修正される予定)
-          curl -LO https://github.com/rigaya/VCEEnc/releases/download/7.01/vceencc_7.01_Ubuntu20.04_amd64.deb
-          7z x -y vceencc_7.01_Ubuntu20.04_amd64.deb && tar xvf data.tar
+          curl -LO https://github.com/rigaya/VCEEnc/releases/download/7.04/vceencc_7.04_Ubuntu20.04_amd64.deb
+          7z x -y vceencc_7.04_Ubuntu20.04_amd64.deb && tar xvf data.tar
           mkdir thirdparty/VCEEncC/
           cp usr/bin/vceencc thirdparty/VCEEncC/VCEEncC.elf
           chmod a+x thirdparty/VCEEncC/VCEEncC.elf
