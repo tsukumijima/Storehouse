@@ -102,6 +102,7 @@ jobs:
           curl -L -o python.tar.gz https://github.com/indygreg/python-build-standalone/releases/download/20220802/cpython-3.10.6+20220802-x86_64-pc-windows-msvc-shared-install_only.tar.gz
           tar xvf python.tar.gz
           mv python/ thirdparty/Python/
+          Rename-Item thirdparty/Python/LICENSE.txt License.txt
 
           # pipenv のインストール
           thirdparty/Python/python.exe -m pip install pipenv==2022.8.15
