@@ -25,6 +25,7 @@ jobs:
       - name: Build tsreadex
         run: |
           git clone https://github.com/xtne6f/tsreadex
+          git checkout bf0ca4f0b0459b9986296b0d2559794663b283ce
           cd tsreadex/
           msbuild tsreadex.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
           mkdir ../thirdparty/tsreadex/
@@ -35,6 +36,7 @@ jobs:
       - name: Build psisiarc
         run: |
           git clone https://github.com/xtne6f/psisiarc
+          git checkout 88409792191017abfd2861fdd2aacf12d207f7b5
           cd psisiarc/
           msbuild psisiarc.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
           mkdir ../thirdparty/psisiarc/
@@ -51,6 +53,7 @@ jobs:
       - name: Build Akebi HTTPS Server
         run: |
           git clone https://github.com/tsukumijima/Akebi
+          git checkout 2757f136dda4f3c1d5b8baa433c1b52bb8526a0c
           cd Akebi/
           go build -ldflags="-s -w" -a -o "akebi-https-server.exe" "./https-server/"
           mkdir ../thirdparty/Akebi/
@@ -131,6 +134,7 @@ jobs:
       - name: Build tsreadex
         run: |
           git clone https://github.com/xtne6f/tsreadex
+          git checkout bf0ca4f0b0459b9986296b0d2559794663b283ce
           cd tsreadex/
           make
           mkdir ../thirdparty/tsreadex/
@@ -142,6 +146,7 @@ jobs:
       - name: Build psisiarc
         run: |
           git clone https://github.com/xtne6f/psisiarc
+          git checkout 88409792191017abfd2861fdd2aacf12d207f7b5
           cd psisiarc/
           make
           mkdir ../thirdparty/psisiarc/
@@ -159,6 +164,7 @@ jobs:
       - name: Build Akebi HTTPS Server
         run: |
           git clone https://github.com/tsukumijima/Akebi
+          git checkout 2757f136dda4f3c1d5b8baa433c1b52bb8526a0c
           cd Akebi/
           go build -ldflags="-s -w" -a -o "akebi-https-server.elf" "./https-server/"
           mkdir ../thirdparty/Akebi/
@@ -218,7 +224,7 @@ jobs:
           curl -L -o thirdparty/QSVEncC/License.txt https://raw.githubusercontent.com/rigaya/QSVEnc/master/license.txt
 
           # NVEncC のアーカイブのダウンロード
-          ## 2022/08 現時点で Linux 版の NVEncC 6.02 以降にはエンコードが安定しない問題がある
+          ## 2022/08 時点で Linux 版の NVEncC 6.02 以降にはエンコードが安定しない問題がある (近日中に修正される予定)
           curl -LO https://github.com/rigaya/NVEnc/releases/download/6.01/nvencc_6.01_Ubuntu20.04_amd64.deb
           7z x -y nvencc_6.01_Ubuntu20.04_amd64.deb && tar xvf data.tar
           mkdir thirdparty/NVEncC/
@@ -228,8 +234,9 @@ jobs:
           curl -L -o thirdparty/NVEncC/License.txt https://raw.githubusercontent.com/rigaya/NVEnc/master/NVEnc_license.txt
 
           # VCEEncC のアーカイブのダウンロード
-          curl -LO https://github.com/rigaya/VCEEnc/releases/download/7.03/vceencc_7.03_Ubuntu20.04_amd64.deb
-          7z x -y vceencc_7.03_Ubuntu20.04_amd64.deb && tar xvf data.tar
+          ## 2022/08 時点で Linux 版の VCEEncC 7.01 以降にはエンコードが安定しない問題がある (近日中に修正される予定)
+          curl -LO https://github.com/rigaya/VCEEnc/releases/download/7.01/vceencc_7.01_Ubuntu20.04_amd64.deb
+          7z x -y vceencc_7.01_Ubuntu20.04_amd64.deb && tar xvf data.tar
           mkdir thirdparty/VCEEncC/
           cp usr/bin/vceencc thirdparty/VCEEncC/VCEEncC.elf
           chmod a+x thirdparty/VCEEncC/VCEEncC.elf
@@ -244,6 +251,7 @@ jobs:
           curl -L -o python.tar.gz https://github.com/indygreg/python-build-standalone/releases/download/20220802/cpython-3.10.6+20220802-x86_64-unknown-linux-gnu-install_only.tar.gz
           tar xvf python.tar.gz
           mv python/ thirdparty/Python/
+          ln -s python3.10 thirdparty/Python/bin/python
 
           # pipenv のインストール
           thirdparty/Python/bin/python -m pip install pipenv==2022.8.15
