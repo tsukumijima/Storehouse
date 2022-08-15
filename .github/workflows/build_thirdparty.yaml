@@ -25,8 +25,8 @@ jobs:
       - name: Build tsreadex
         run: |
           git clone https://github.com/xtne6f/tsreadex
-          git checkout bf0ca4f0b0459b9986296b0d2559794663b283ce
           cd tsreadex/
+          git checkout bf0ca4f0b0459b9986296b0d2559794663b283ce
           msbuild tsreadex.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
           mkdir ../thirdparty/tsreadex/
           cp x64/Release/tsreadex.exe ../thirdparty/tsreadex/tsreadex.exe
@@ -36,8 +36,8 @@ jobs:
       - name: Build psisiarc
         run: |
           git clone https://github.com/xtne6f/psisiarc
-          git checkout 88409792191017abfd2861fdd2aacf12d207f7b5
           cd psisiarc/
+          git checkout 88409792191017abfd2861fdd2aacf12d207f7b5
           msbuild psisiarc.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
           mkdir ../thirdparty/psisiarc/
           cp x64/Release/psisiarc.exe ../thirdparty/psisiarc/psisiarc.exe
@@ -53,8 +53,8 @@ jobs:
       - name: Build Akebi HTTPS Server
         run: |
           git clone https://github.com/tsukumijima/Akebi
-          git checkout 2757f136dda4f3c1d5b8baa433c1b52bb8526a0c
           cd Akebi/
+          git checkout 2757f136dda4f3c1d5b8baa433c1b52bb8526a0c
           go build -ldflags="-s -w" -a -o "akebi-https-server.exe" "./https-server/"
           mkdir ../thirdparty/Akebi/
           cp akebi-https-server.exe ../thirdparty/Akebi/akebi-https-server.exe
@@ -135,8 +135,8 @@ jobs:
       - name: Build tsreadex
         run: |
           git clone https://github.com/xtne6f/tsreadex
-          git checkout bf0ca4f0b0459b9986296b0d2559794663b283ce
           cd tsreadex/
+          git checkout bf0ca4f0b0459b9986296b0d2559794663b283ce
           make
           mkdir ../thirdparty/tsreadex/
           cp tsreadex ../thirdparty/tsreadex/tsreadex.elf
@@ -147,8 +147,8 @@ jobs:
       - name: Build psisiarc
         run: |
           git clone https://github.com/xtne6f/psisiarc
-          git checkout 88409792191017abfd2861fdd2aacf12d207f7b5
           cd psisiarc/
+          git checkout 88409792191017abfd2861fdd2aacf12d207f7b5
           make
           mkdir ../thirdparty/psisiarc/
           cp psisiarc ../thirdparty/psisiarc/psisiarc.elf
@@ -165,8 +165,8 @@ jobs:
       - name: Build Akebi HTTPS Server
         run: |
           git clone https://github.com/tsukumijima/Akebi
-          git checkout 2757f136dda4f3c1d5b8baa433c1b52bb8526a0c
           cd Akebi/
+          git checkout 2757f136dda4f3c1d5b8baa433c1b52bb8526a0c
           go build -ldflags="-s -w" -a -o "akebi-https-server.elf" "./https-server/"
           mkdir ../thirdparty/Akebi/
           cp akebi-https-server.elf ../thirdparty/Akebi/akebi-https-server.elf
