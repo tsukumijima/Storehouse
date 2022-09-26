@@ -54,13 +54,6 @@ jobs:
           # パッケージスクリプトを実行
           mkdir Packages
           cd TVTest/
-          where.exe bash
-          ls ./
-          ls ./src/
-          ls ./src/Win32/
-          ls ./src/Win32/Release/
-          ls ./src/x64/
-          ls ./src/x64/Release/
           bash package.sh -a x86 -c static -l all -t release -o ../Packages/
           bash package.sh -a x64 -c static -l all -t release -o ../Packages/
           cd ../
