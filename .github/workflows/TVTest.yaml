@@ -54,8 +54,8 @@ jobs:
           # パッケージスクリプトを実行
           mkdir Packages
           cd TVTest/
-          bash package.sh -a x86 -c static -l all -t release -o ../Packages/
-          bash package.sh -a x64 -c static -l all -t release -o ../Packages/
+          bash package.sh -a x86 -c static -l all -t Release -o ../Packages/
+          bash package.sh -a x64 -c static -l all -t Release -o ../Packages/
           cd ../
 
           # ビルド成果物を配置
