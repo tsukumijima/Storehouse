@@ -8,7 +8,7 @@ on: [workflow_dispatch]
 jobs:
 
   # TVTest (32bit / 64bit) のビルド
-  # ref: https://github.com/SlashNephy/TVTest-builder/blob/master/.github/workflows/TVTest.yml
+  # ref: https://github.com/SlashNephy/TVTest-builder/
   build:
     runs-on: windows-2022
     steps:
@@ -16,6 +16,12 @@ jobs:
       # MSBuild のセットアップ
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
+
+      # Node.js 16 のセットアップ
+      - name: Setup Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
       # TVTest のビルド
       - name: Build TVTest
@@ -167,14 +173,49 @@ jobs:
           cd ../src/
           msbuild TVCaption2.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild TVCaption2.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Release/TVCaptionMod2.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
-          cp -Path x64/Release/TVCaptionMod2.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
+          cp -Path Release/TVCaptionMod2.tvtp -Destination ../../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
+          cp -Path x64/Release/TVCaptionMod2.tvtp -Destination ../../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
           cd ../
           cp -Path TVCaptionMod2_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
           cp -Path TVCaptionMod2_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
           mkdir ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TVCaptionMod2/
           mkdir ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TVCaptionMod2/
           # TODO: TVCaptionMod2.ini を配置する
+
+      # TVTDataBroadcastingWV2 のビルド
+      # ref: https://github.com/otya128/TVTDataBroadcastingWV2/blob/master/.github/workflows/msbuild.yml
+      - name: Build TVTDataBroadcastingWV2
+        run: |
+          git clone -b master --recursive https://github.com/otya128/TVTDataBroadcastingWV2.git
+          cd TVTDataBroadcastingWV2/
+          nuget restore ./
+          msbuild TVTDataBroadcastingWV2.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild TVTDataBroadcastingWV2.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/TVTDataBroadcastingWV2.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
+          cp -Path x64/Release/TVTDataBroadcastingWV2.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
+          cp -Path README.md -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TVTDataBroadcastingWV2_Readme.txt
+          cp -Path README.md -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TVTDataBroadcastingWV2_Readme.txt
+
+      # TVTDataBroadcastingWV2 が依存する web-bml のビルド
+      - name: Build web-bml
+        run: |
+          cd TVTDataBroadcastingWV2/browser/
+          yarn install
+          yarn workspace @chinachu/aribts build
+          yarn run build
+          mkdir ../../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TVTDataBroadcastingWV2/resources/dist/
+          mkdir ../../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TVTDataBroadcastingWV2/resources/dist/
+          cp -Path dist/TVTDataBroadcastingWV2.js -Destination ../../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TVTDataBroadcastingWV2/resources/dist/
+          cp -Path dist/TVTDataBroadcastingWV2.js -Destination ../../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TVTDataBroadcastingWV2/resources/dist/
+          cp -Path TVTDataBroadcastingWV2.html -Destination ../../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TVTDataBroadcastingWV2/resources/
+          cp -Path TVTDataBroadcastingWV2.html -Destination ../../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TVTDataBroadcastingWV2/resources/
+          cd ../../
+          curl -LO https://github.com/googlefonts/kosugi/raw/main/fonts/ttf/Kosugi-Regular.ttf
+          curl -LO https://github.com/googlefonts/kosugi-maru/raw/main/fonts/ttf/KosugiMaru-Regular.ttf
+          cp -Path Kosugi-Regular.ttf -Destination ${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TVTDataBroadcastingWV2/resources/dist/
+          cp -Path Kosugi-Regular.ttf -Destination ${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TVTDataBroadcastingWV2/resources/dist/
+          cp -Path KosugiMaru-Regular.ttf -Destination ${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TVTDataBroadcastingWV2/resources/dist/
+          cp -Path KosugiMaru-Regular.ttf -Destination ${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TVTDataBroadcastingWV2/resources/dist/
 
       # TvtPlay のビルド
       - name: Build TvtPlay
@@ -185,8 +226,8 @@ jobs:
           cd TvtPlay/BonDriver_Pipe_src/
           msbuild BonDriver_Pipe.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild BonDriver_Pipe.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Release/BonDriver_Pipe.dll -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
-          cp -Path x64/Release/BonDriver_Pipe.dll -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
+          cp -Path Release/BonDriver_Pipe.dll -Destination ../../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path x64/Release/BonDriver_Pipe.dll -Destination ../../${{steps.version.outputs.data}}/TVTest_64bit/
 
           # TvtAudioStretchFilter が依存する BaseClasses のビルド
           cd ../TvtAudioStretchFilter_src/baseclasses/
@@ -202,19 +243,19 @@ jobs:
           cd ../../../
           msbuild TvtAudioStretchFilter.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild TvtAudioStretchFilter.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Release/TvtAudioStretchFilter.ax -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
-          cp -Path x64/Release/TvtAudioStretchFilter.ax -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
+          cp -Path Release/TvtAudioStretchFilter.ax -Destination ../../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path x64/Release/TvtAudioStretchFilter.ax -Destination ../../${{steps.version.outputs.data}}/TVTest_64bit/
 
           # TvtPlay のビルド
           cd ../src/
           msbuild TvtPlay.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild TvtPlay.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Release/TvtPlay.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
-          cp -Path x64/Release/TvtPlay.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
-          cp -Path Buttons24.bmp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TvtPlay_Buttons24.bmp
-          cp -Path Buttons24.bmp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TvtPlay_Buttons24.bmp
-          cp -Path Buttons32.bmp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TvtPlay_Buttons32.bmp
-          cp -Path Buttons32.bmp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TvtPlay_Buttons32.bmp
+          cp -Path Release/TvtPlay.tvtp -Destination ../../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
+          cp -Path x64/Release/TvtPlay.tvtp -Destination ../../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
+          cp -Path Buttons24.bmp -Destination ../../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TvtPlay_Buttons24.bmp
+          cp -Path Buttons24.bmp -Destination ../../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TvtPlay_Buttons24.bmp
+          cp -Path Buttons32.bmp -Destination ../../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TvtPlay_Buttons32.bmp
+          cp -Path Buttons32.bmp -Destination ../../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TvtPlay_Buttons32.bmp
           cd ../
           cp -Path TvtPlay_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
           cp -Path TvtPlay_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
