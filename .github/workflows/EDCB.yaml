@@ -1,5 +1,5 @@
 
-name: Build TVTest
+name: Build EDCB
 
 # 手動実行
 on: [workflow_dispatch]
@@ -74,6 +74,18 @@ jobs:
           # EDCB_Build.txt を配置
           cp -Path Assets/EDCB_Build.txt -Destination ${{steps.version.outputs.data}}/
           bash -c "sed -i 's|%VER_DATE%|${{steps.version.outputs.version_date}}|g' ${{steps.version.outputs.data}}/EDCB_Build.txt"
+
+      # libaribb25 (B25Decoder.dll / B1Decoder.dll) のビルド
+      - name: Build libaribb25 (B25Decoder.dll / B1Decoder.dll)
+        run: |
+          git clone -b master https://github.com/tsukumijima/libaribb25.git
+          cd libaribb25/
+          msbuild arib_std_b25.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild arib_std_b25.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Win32/Release/libaribb1.dll -Destination ../${{steps.version.outputs.data}}/EDCB_32bit/B1Decoder.dll
+          cp -Path Win32/Release/libaribb25.dll -Destination ../${{steps.version.outputs.data}}/EDCB_32bit/B25Decoder.dll
+          cp -Path x64/Release/libaribb1.dll -Destination ../${{steps.version.outputs.data}}/EDCB_64bit/B1Decoder.dll
+          cp -Path x64/Release/libaribb25.dll -Destination ../${{steps.version.outputs.data}}/EDCB_64bit/B25Decoder.dll
 
       # OpenSSL ライブラリのダウンロード
       - name: Download OpenSSL Libraries
