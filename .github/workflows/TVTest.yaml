@@ -88,6 +88,16 @@ jobs:
           cp -Path bin\Release\netcoreapp3.1\win10-x86\publish\jkcnsl.exe -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
           cp -Path bin\Release\netcoreapp3.1\win10-x64\publish\jkcnsl.exe -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
 
+      # jq.exe と sqlite3.exe (設定次第では NicoJK の動作に必要) をダウンロード
+      - name: Download jq.exe / sqlite3.exe
+        run: |
+          curl -L -o ${{steps.version.outputs.data}}/TVTest_32bit/jq.exe https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win32.exe
+          curl -L -o ${{steps.version.outputs.data}}/TVTest_64bit/jq.exe https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe
+          curl -L -o sqlite.zip https://www.sqlite.org/2022/sqlite-tools-win32-x86-3390300.zip
+          7z x -y sqlite.zip
+          cp -Path sqlite-tools-win32-x86-3390300/sqlite3.exe -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path sqlite-tools-win32-x86-3390300/sqlite3.exe -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
+
       # TvCas (B25.tvcas / B1.tvcas) のビルド
       - name: Build TvCas (B25.tvcas / B1.tvcas)
         run: |
@@ -122,6 +132,13 @@ jobs:
           msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
           cp -Path Win32/Release/CasProcessor.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
           cp -Path x64/Release/CasProcessor.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
+
+      # NicoCookie4Chrome (NicoJK でのニコニコへのログインに利用する) のダウンロード
+      - name: Download NicoCookie4Chrome
+        run: |
+          curl -L -o NicoCookie4Chrome.zip https://vb45wb5b.up.seesaa.net/image/NicoCookie4Chrome_1.01.zip
+          7z x -y -o"${{steps.version.outputs.data}}/TVTest_32bit/Plugins/NicoCookie4Chrome/" NicoCookie4Chrome.zip
+          7z x -y -o"${{steps.version.outputs.data}}/TVTest_64bit/Plugins/NicoCookie4Chrome/" NicoCookie4Chrome.zip
 
       # NicoJK のビルド
       - name: Build NicoJK
