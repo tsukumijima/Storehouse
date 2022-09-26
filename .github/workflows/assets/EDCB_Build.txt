@@ -37,7 +37,7 @@ EDCB を利用する上で必須、またはあった方が良さそうなファ
   ・HTTP で動作させる場合はこのライブラリがなくても動作しますが、HTTPS で動作させる場合は必須です。
   ・openssl.exe はライブラリではありませんが、HTTPS 化する際に必要な自己署名証明書の生成に利用します。
     ・HTTPS 化の詳細は Readme_Mod.txt 内の「CivetWebの組み込みについて」に記載されています。
-  ・https://curl.se/windows/ にて配布されているものを同梱しています。
+  ・かつて https://curl.se/windows/ にて配布されていた OpenSSL 1.1.1k (Wayback Machine よりダウンロード) を同梱しています。
 
 ・Readme_EMWUI.md … EDCB Material WebUI の説明書（markdown 形式）
 
@@ -65,9 +65,9 @@ EDCB を利用する上で必須、またはあった方が良さそうなファ
   ・HttpPublic.ini の設定をすでに変更している場合は、アップデート時に上書きしないように注意してください。
 
 ・Tools/ffmpeg.exe・Tools/ffprobe.exe … EDCB Material WebUI がファイル再生やファイル情報の取得に利用する動画変換ソフト / 動画情報取得ソフト
-  ・ffmpeg-4.1.4-shared (https://web.archive.org/web/2/https://ffmpeg.zeranoe.com/builds/) を同梱しています。
-  ・ffmpeg-4.1.4-shared のうち、ffplay.exe は不要なため削除しています。
-  ・FFmpeg 4.2 以降では TS 内に含まれる字幕の取り扱いが変わったことにより字幕付きの番組でエンコードに失敗するため、あえて FFmpeg 4.1.4 を同梱しています。
+  ・かつて https://ffmpeg.zeranoe.com/builds/ にて配布されていた FFmpeg 4.1.4 (Shared 版: Wayback Machine よりダウンロード) を同梱しています。
+  ・FFmpeg 4.1.4 (Shared 版) のうち、ffplay.exe は不要なため削除しています。
+  ・FFmpeg 4.2 以降では TS 内に含まれる字幕の取り扱いが変わった影響で字幕付きの番組でエンコードに失敗するため、あえて FFmpeg 4.1.4 を同梱しています。
   ・Shared 版にしている理由は、ffmpeg と ffprobe でライブラリを共通化でき、ファイルサイズを半分近くにまで減らせるためです。
 
 ・Tools/psisiarc.exe・Tools/tsmemseg.exe・Tools/tsreadex.exe … EDCB Legacy WebUI がストリーミング再生に利用するユーティリティソフト

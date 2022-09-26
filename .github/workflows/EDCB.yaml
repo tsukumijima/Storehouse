@@ -101,6 +101,16 @@ jobs:
           cp -Path openssl-1.1.1k-win64-mingw/libssl-1_1.dll -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
           cp -Path openssl-1.1.1k-win64-mingw/openssl.exe -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
 
+      # Write_Multi (EdcbPlugIn 向け書き出しプラグイン) のビルド
+      - name: Build Write_Multi
+        run: |
+          git clone -b master https://github.com/tsukumijima/Write_Multi.git
+          cd Write_Multi/
+          msbuild Write_Multi.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild Write_Multi.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/Write_Multi.dll -Destination ../${{steps.version.outputs.data}}/EDCB_32bit/EdcbPlugIn/
+          cp -Path x64/Release/Write_Multi.dll -Destination ../${{steps.version.outputs.data}}/EDCB_64bit/EdcbPlugIn/
+
       # FFmpeg 4.1.4 のダウンロード
       - name: Download FFmpeg 4.1.4
         run: |
