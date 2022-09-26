@@ -1,0 +1,185 @@
+
+name: Build TVTest
+
+# 手動実行
+on: [workflow_dispatch]
+
+# ジョブの定義
+jobs:
+
+  # TVTest (32bit / 64bit) のビルド
+  # ref: https://github.com/SlashNephy/TVTest-builder/blob/master/.github/workflows/TVTest.yml
+  build:
+    runs-on: windows-2022
+    steps:
+
+      # MSBuild のセットアップ
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      # TVTest のビルド
+      - name: Build TVTest
+        run: |
+          git clone -b develop --recursive https://github.com/tsukumijima/TVTest.git
+
+          # LibISDB のビルド
+          cd TVTest/src/LibISDB/Projects/
+          msbuild LibISDB.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild LibISDB.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+
+          # TVTest 本体のビルド
+          cd ../../
+          msbuild TVTest.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild TVTest.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+
+          # TVTest 付属プラグインのビルド
+          cd ../sdk/Samples/
+          msbuild Samples.sln /t:Build /p:Configuration=Release_static /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild Samples.sln /t:Build /p:Configuration=Release_static /p:Platform=x64 /p:PlatformToolset=v142
+
+      # TVTest のバージョンとして用いる日付を取得して保存
+      # マージコミットを除いた一番新しいコミットの日付を採用する
+      # ref: https://qiita.com/tatataiki/items/e71f26ab73094f21bca8
+      - id: version
+        name: Set TVTest Version
+        working-directory: TVTest/
+        run: |
+          $date = git log --no-merges --date=iso --date=format:"%y%m%d" --pretty=format:"%ad" -1
+          echo "::set-output name=data::TVTest-0.10.0-$date"
+
+      # パッケージングスクリプトを実行し、ビルド成果物を適切なフォルダに配置
+      - name: Arrangement Artifacts
+        run: |
+
+          # パッケージスクリプトを実行
+          mkdir Packages
+          cd TVTest/
+          bash package.sh -a x86 -c static -l all -t release -o ../Packages/
+          bash package.sh -a x64 -c static -l all -t release -o ../Packages/
+          cd ../
+
+          # ビルド成果物を配置
+          mkdir ${{needs.build.version.data}}
+          cd ${{needs.build.version.data}}/
+          cp -Path ../Packages/x86/release/ -Destination TVTest_32bit/ -Recurse
+          cp -Path ../Packages/x64/release/ -Destination TVTest_64bit/ -Recurse
+
+      # TvCas (B25.tvcas/B1.tvcas) のビルド
+      - name: Build TvCas (B25.tvcas/B1.tvcas)
+        run: |
+          git clone -b master https://github.com/tsukumijima/TvCas.git
+          cd TvCas/
+          msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Win32/Release/B1.tvcas -Destination ../${{needs.build.version.data}}/TVTest_32bit/
+          cp -Path Win32/Release/B25.tvcas -Destination ../${{needs.build.version.data}}/TVTest_32bit/
+          cp -Path x64/Release/B1.tvcas -Destination ../${{needs.build.version.data}}/TVTest_64bit/
+          cp -Path x64/Release/B25.tvcas -Destination ../${{needs.build.version.data}}/TVTest_64bit/
+
+      # TVTestVideoDecoder のビルド
+      - name: Build TVTestVideoDecoder
+        run: |
+          git clone -b master https://github.com/tsukumijima/TVTestVideoDecoder.git
+          cd TVTestVideoDecoder/src/
+          msbuild TVTestVideoDecoder.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild TVTestVideoDecoder.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Win32/Release/TVTestVideoDecoder.ax -Destination ../../${{needs.build.version.data}}/TVTest_32bit/
+          cp -Path x64/Release/TVTestVideoDecoder.ax -Destination ../../${{needs.build.version.data}}/TVTest_64bit/
+          cd ../
+          cp -Path doc/TVTestVideoDecoder.txt -Destination ../${{needs.build.version.data}}/TVTest_32bit/
+          cp -Path doc/TVTestVideoDecoder.txt -Destination ../${{needs.build.version.data}}/TVTest_64bit/
+
+      # CasProcessor のビルド
+      - name: Build CasProcessor
+        run: |
+          git clone -b master https://github.com/tsukumijima/CasProcessor.git
+          cd CasProcessor/
+          msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Win32/Release/CasProcessor.tvtp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
+          cp -Path x64/Release/CasProcessor.tvtp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
+
+      # NicoJK のビルド
+      - name: Build NicoJK
+        run: |
+          git clone -b master https://github.com/xtne6f/NicoJK.git
+          cd NicoJK/
+          msbuild NicoJK.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild NicoJK.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/NicoJK.tvtp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
+          cp -Path x64/Release/NicoJK.tvtp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
+          cp -Path Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/NicoJK_Readme.txt
+          cp -Path Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/NicoJK_Readme.txt
+          mkdir ../${{needs.build.version.data}}/TVTest_32bit/Plugins/NicoJK/
+          mkdir ../${{needs.build.version.data}}/TVTest_64bit/Plugins/NicoJK/
+          cp -Path Release/jkimlog.exe -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/NicoJK/
+          cp -Path x64/Release/jkimlog.exe -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/NicoJK/
+          # TODO: NicoJK.ini を配置する
+
+      # TVCaptionMod2 のビルド
+      - name: Build TVCaptionMod2
+        run: |
+          git clone -b master https://github.com/tsukumijima/TVCaptionMod2.git
+          cd TVCaptionMod2/Caption_src/
+          msbuild Caption.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild Caption.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cd ../src/
+          msbuild TVCaption2.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild TVCaption2.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/TVCaptionMod2.tvtp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
+          cp -Path x64/Release/TVCaptionMod2.tvtp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
+          cd ../
+          cp -Path TVCaptionMod2_Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
+          cp -Path TVCaptionMod2_Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
+          mkdir ../${{needs.build.version.data}}/TVTest_32bit/Plugins/TVCaptionMod2/
+          mkdir ../${{needs.build.version.data}}/TVTest_64bit/Plugins/TVCaptionMod2/
+          # TODO: TVCaptionMod2.ini を配置する
+
+      # TvtPlay のビルド
+      - name: Build TVCaptionMod2
+        run: |
+          git clone -b work-plus https://github.com/xtne6f/TvtPlay.git
+
+          # BonDriver_Pipe のビルド
+          cd TvtPlay/BonDriver_Pipe_src/
+          msbuild BonDriver_Pipe.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild BonDriver_Pipe.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/BonDriver_Pipe.dll -Destination ../${{needs.build.version.data}}/TVTest_32bit/
+          cp -Path x64/Release/BonDriver_Pipe.dll -Destination ../${{needs.build.version.data}}/TVTest_64bit/
+
+          # TvtAudioStretchFilter が依存する BaseClasses のビルド
+          cd ../TvtAudioStretchFilter_src/baseclasses/
+          msbuild BaseClasses_VC14.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild BaseClasses_VC14.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+
+          # TvtAudioStretchFilter が依存する SoundTouch のビルド
+          cd ../soundtouch/source/SoundTouch/
+          msbuild SoundTouch.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild SoundTouch.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+
+          # TvtAudioStretchFilter のビルド
+          cd ../../../
+          msbuild TvtAudioStretchFilter.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild TvtAudioStretchFilter.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/TvtAudioStretchFilter.ax -Destination ../${{needs.build.version.data}}/TVTest_32bit/
+          cp -Path x64/Release/TvtAudioStretchFilter.ax -Destination ../${{needs.build.version.data}}/TVTest_64bit/
+
+          # TvtPlay のビルド
+          cd ../src/
+          msbuild TvtPlay.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild TvtPlay.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/TvtPlay.tvtp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
+          cp -Path x64/Release/TvtPlay.tvtp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
+          cp -Path Buttons24.bmp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/TvtPlay_Buttons24.bmp
+          cp -Path Buttons24.bmp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/TvtPlay_Buttons24.bmp
+          cp -Path Buttons32.bmp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/TvtPlay_Buttons32.bmp
+          cp -Path Buttons32.bmp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/TvtPlay_Buttons32.bmp
+          cd ../
+          cp -Path TvtPlay_Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
+          cp -Path TvtPlay_Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
+
+      # Artifact としてアップロード
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{needs.build.version.data}}/
