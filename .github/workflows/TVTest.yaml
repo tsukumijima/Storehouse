@@ -108,8 +108,8 @@ jobs:
           curl -L -o ${{steps.version.outputs.data}}/TVTest_64bit/jq.exe https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe
           curl -L -o sqlite.zip https://www.sqlite.org/2022/sqlite-tools-win32-x86-3390300.zip
           7z x -y sqlite.zip
-          cp -Path sqlite-tools-win32-x86-3390300/sqlite3.exe -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
-          cp -Path sqlite-tools-win32-x86-3390300/sqlite3.exe -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
+          cp -Path sqlite-tools-win32-x86-3390300/sqlite3.exe -Destination ${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path sqlite-tools-win32-x86-3390300/sqlite3.exe -Destination ${{steps.version.outputs.data}}/TVTest_64bit/
 
       # TvCas (B25.tvcas / B1.tvcas) のビルド
       - name: Build TvCas (B25.tvcas / B1.tvcas)
@@ -168,7 +168,6 @@ jobs:
           mkdir ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/NicoJK/
           cp -Path Release/jkimlog.exe -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/NicoJK/
           cp -Path x64/Release/jkimlog.exe -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/NicoJK/
-          # TODO: NicoJK.ini を配置する
 
       # TVCaptionMod2 のビルド
       - name: Build TVCaptionMod2
@@ -185,8 +184,6 @@ jobs:
           cd ../
           cp -Path TVCaptionMod2_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
           cp -Path TVCaptionMod2_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
-          cd ../
-          # TODO: TVCaptionMod2.ini を配置する
 
       # TVTDataBroadcastingWV2 のビルド
       # ref: https://github.com/otya128/TVTDataBroadcastingWV2/blob/master/.github/workflows/msbuild.yml
