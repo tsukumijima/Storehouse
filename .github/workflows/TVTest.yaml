@@ -54,13 +54,20 @@ jobs:
           # パッケージスクリプトを実行
           mkdir Packages
           cd TVTest/
+          where.exe bash
+          ls ./
+          ls ./src/
+          ls ./src/Win32/
+          ls ./src/Win32/Release/
+          ls ./src/x64/
+          ls ./src/x64/Release/
           bash package.sh -a x86 -c static -l all -t release -o ../Packages/
           bash package.sh -a x64 -c static -l all -t release -o ../Packages/
           cd ../
 
           # ビルド成果物を配置
-          mkdir ${{needs.build.version.data}}
-          cd ${{needs.build.version.data}}/
+          mkdir ${{steps.version.outputs.data}}
+          cd ${{steps.version.outputs.data}}/
           cp -Path ../Packages/x86/release/ -Destination TVTest_32bit/ -Recurse
           cp -Path ../Packages/x64/release/ -Destination TVTest_64bit/ -Recurse
 
@@ -71,10 +78,10 @@ jobs:
           cd TvCas/
           msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
           msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Win32/Release/B1.tvcas -Destination ../${{needs.build.version.data}}/TVTest_32bit/
-          cp -Path Win32/Release/B25.tvcas -Destination ../${{needs.build.version.data}}/TVTest_32bit/
-          cp -Path x64/Release/B1.tvcas -Destination ../${{needs.build.version.data}}/TVTest_64bit/
-          cp -Path x64/Release/B25.tvcas -Destination ../${{needs.build.version.data}}/TVTest_64bit/
+          cp -Path Win32/Release/B1.tvcas -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path Win32/Release/B25.tvcas -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path x64/Release/B1.tvcas -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
+          cp -Path x64/Release/B25.tvcas -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
 
       # TVTestVideoDecoder のビルド
       - name: Build TVTestVideoDecoder
@@ -83,11 +90,11 @@ jobs:
           cd TVTestVideoDecoder/src/
           msbuild TVTestVideoDecoder.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild TVTestVideoDecoder.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Win32/Release/TVTestVideoDecoder.ax -Destination ../../${{needs.build.version.data}}/TVTest_32bit/
-          cp -Path x64/Release/TVTestVideoDecoder.ax -Destination ../../${{needs.build.version.data}}/TVTest_64bit/
+          cp -Path Win32/Release/TVTestVideoDecoder.ax -Destination ../../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path x64/Release/TVTestVideoDecoder.ax -Destination ../../${{steps.version.outputs.data}}/TVTest_64bit/
           cd ../
-          cp -Path doc/TVTestVideoDecoder.txt -Destination ../${{needs.build.version.data}}/TVTest_32bit/
-          cp -Path doc/TVTestVideoDecoder.txt -Destination ../${{needs.build.version.data}}/TVTest_64bit/
+          cp -Path doc/TVTestVideoDecoder.txt -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path doc/TVTestVideoDecoder.txt -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
 
       # CasProcessor のビルド
       - name: Build CasProcessor
@@ -96,8 +103,8 @@ jobs:
           cd CasProcessor/
           msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Win32/Release/CasProcessor.tvtp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
-          cp -Path x64/Release/CasProcessor.tvtp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
+          cp -Path Win32/Release/CasProcessor.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
+          cp -Path x64/Release/CasProcessor.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
 
       # NicoJK のビルド
       - name: Build NicoJK
@@ -106,14 +113,14 @@ jobs:
           cd NicoJK/
           msbuild NicoJK.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild NicoJK.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Release/NicoJK.tvtp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
-          cp -Path x64/Release/NicoJK.tvtp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
-          cp -Path Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/NicoJK_Readme.txt
-          cp -Path Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/NicoJK_Readme.txt
-          mkdir ../${{needs.build.version.data}}/TVTest_32bit/Plugins/NicoJK/
-          mkdir ../${{needs.build.version.data}}/TVTest_64bit/Plugins/NicoJK/
-          cp -Path Release/jkimlog.exe -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/NicoJK/
-          cp -Path x64/Release/jkimlog.exe -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/NicoJK/
+          cp -Path Release/NicoJK.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
+          cp -Path x64/Release/NicoJK.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
+          cp -Path Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/NicoJK_Readme.txt
+          cp -Path Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/NicoJK_Readme.txt
+          mkdir ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/NicoJK/
+          mkdir ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/NicoJK/
+          cp -Path Release/jkimlog.exe -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/NicoJK/
+          cp -Path x64/Release/jkimlog.exe -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/NicoJK/
           # TODO: NicoJK.ini を配置する
 
       # TVCaptionMod2 のビルド
@@ -126,13 +133,13 @@ jobs:
           cd ../src/
           msbuild TVCaption2.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild TVCaption2.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Release/TVCaptionMod2.tvtp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
-          cp -Path x64/Release/TVCaptionMod2.tvtp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
+          cp -Path Release/TVCaptionMod2.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
+          cp -Path x64/Release/TVCaptionMod2.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
           cd ../
-          cp -Path TVCaptionMod2_Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
-          cp -Path TVCaptionMod2_Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
-          mkdir ../${{needs.build.version.data}}/TVTest_32bit/Plugins/TVCaptionMod2/
-          mkdir ../${{needs.build.version.data}}/TVTest_64bit/Plugins/TVCaptionMod2/
+          cp -Path TVCaptionMod2_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
+          cp -Path TVCaptionMod2_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
+          mkdir ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TVCaptionMod2/
+          mkdir ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TVCaptionMod2/
           # TODO: TVCaptionMod2.ini を配置する
 
       # TvtPlay のビルド
@@ -144,8 +151,8 @@ jobs:
           cd TvtPlay/BonDriver_Pipe_src/
           msbuild BonDriver_Pipe.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild BonDriver_Pipe.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Release/BonDriver_Pipe.dll -Destination ../${{needs.build.version.data}}/TVTest_32bit/
-          cp -Path x64/Release/BonDriver_Pipe.dll -Destination ../${{needs.build.version.data}}/TVTest_64bit/
+          cp -Path Release/BonDriver_Pipe.dll -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path x64/Release/BonDriver_Pipe.dll -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
 
           # TvtAudioStretchFilter が依存する BaseClasses のビルド
           cd ../TvtAudioStretchFilter_src/baseclasses/
@@ -161,25 +168,25 @@ jobs:
           cd ../../../
           msbuild TvtAudioStretchFilter.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild TvtAudioStretchFilter.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Release/TvtAudioStretchFilter.ax -Destination ../${{needs.build.version.data}}/TVTest_32bit/
-          cp -Path x64/Release/TvtAudioStretchFilter.ax -Destination ../${{needs.build.version.data}}/TVTest_64bit/
+          cp -Path Release/TvtAudioStretchFilter.ax -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path x64/Release/TvtAudioStretchFilter.ax -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
 
           # TvtPlay のビルド
           cd ../src/
           msbuild TvtPlay.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild TvtPlay.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
-          cp -Path Release/TvtPlay.tvtp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
-          cp -Path x64/Release/TvtPlay.tvtp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
-          cp -Path Buttons24.bmp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/TvtPlay_Buttons24.bmp
-          cp -Path Buttons24.bmp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/TvtPlay_Buttons24.bmp
-          cp -Path Buttons32.bmp -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/TvtPlay_Buttons32.bmp
-          cp -Path Buttons32.bmp -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/TvtPlay_Buttons32.bmp
+          cp -Path Release/TvtPlay.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
+          cp -Path x64/Release/TvtPlay.tvtp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
+          cp -Path Buttons24.bmp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TvtPlay_Buttons24.bmp
+          cp -Path Buttons24.bmp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TvtPlay_Buttons24.bmp
+          cp -Path Buttons32.bmp -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TvtPlay_Buttons32.bmp
+          cp -Path Buttons32.bmp -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TvtPlay_Buttons32.bmp
           cd ../
-          cp -Path TvtPlay_Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_32bit/Plugins/
-          cp -Path TvtPlay_Readme.txt -Destination ../${{needs.build.version.data}}/TVTest_64bit/Plugins/
+          cp -Path TvtPlay_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
+          cp -Path TvtPlay_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
 
       # Artifact としてアップロード
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          path: ${{needs.build.version.data}}/
+          path: ${{steps.version.outputs.data}}/
