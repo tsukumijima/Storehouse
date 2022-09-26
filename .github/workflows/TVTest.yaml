@@ -75,8 +75,8 @@ jobs:
           mkdir ${{steps.version.outputs.data}}
           cp -Path Packages/x86/release/ -Destination ${{steps.version.outputs.data}}/TVTest_32bit/ -Recurse
           cp -Path Packages/x64/release/ -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse
-          cp -Path Assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_32bit/ -Recurse
-          cp -Path Assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse
+          cp -Path Assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_32bit/ -Recurse -Force
+          cp -Path Assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse -Force
 
           # TVTest_Build.txt を配置
           cp -Path Assets/TVTest_Build.txt -Destination ${{steps.version.outputs.data}}/
