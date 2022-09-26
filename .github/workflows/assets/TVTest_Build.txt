@@ -13,13 +13,13 @@
 ・プラグインのフォントを ＭＳ Ｐゴシック から Meiryo UI に変更したこと以外の変更は行っていません。
   ・変更したコードは https://github.com/tsukumijima/TVTest にて公開しています。
 ・NicoJK・TVCaptionMod2・TVTDataBroadcastingWV2・局ロゴデータの各設定ファイルを同梱しています（後述）。
-  ・そのため、NicoJK・TVCaptionMod2・TVTDataBroadcastingWV2 の設定をすでに変更している場合、
+  ・NicoJK・TVCaptionMod2・TVTDataBroadcastingWV2 の設定をすでに変更している場合、
     単純に上書きしてしまうと、設定ファイルも同梱されているもので上書きされてしまいます。
   ・プラグインと設定ファイルの対応は以下の通りです。
     ・NicoJK: Plugins/NicoJK.ini
     ・TVCaptionMod2: Plugins/TVCaptionMod2.ini
     ・TVTDataBroadcastingWV2: Plugins/TVTDataBroadcastingWV2.ini
-  ・お住まいの地域が関東圏以外の場合、既に局ロゴを取得している場合は LogoData・LogoData.ini ともに上書きしないことをおすすめします。
+  ・追加で局ロゴを取得している場合は、LogoData・LogoData.ini ともに上書きしないことをおすすめします。
     ・上書きしてしまった場合、ロゴを再取得するまで、関東圏以外の地デジ放送局の局ロゴが表示されなくなります。
     ・同梱の LogoData・LogoData.ini には関東圏以外の地上波放送局の局ロゴが含まれていないためです。
   ・設定や局ロゴを上書きしたくない場合は、当該ファイルをリネームや移動して、置換されないようにしてから上書きしてください。
@@ -72,9 +72,11 @@ TVTest を利用する上で必須、またはあった方が良さそうなフ�
 
 ・LogoData … 私の環境（関東圏）で取得した 地上波・BS・CS110 の局ロゴデータ
   ・地上波の局ロゴデータは関東以外では役に立たないと思いますが、BS・CS110 の局ロゴデータは全国共通なので、いちいち取得する手間を省けるはずです。
+  ・追加で局ロゴを取得している場合は、アップデート時に上書きしないように注意してください。
 
 ・LogoData.ini … 局ロゴデータについての情報が記載された ini ファイル
   ・LogoData か LogoData.ini どちらかを削除してしまった場合、局ロゴを表示できなくなります（局ロゴの再取得が必要）。
+  ・追加で局ロゴを取得している場合は、アップデート時に上書きしないように注意してください。
 
 ・sqlite3.exe … SQLite (データベース管理ソフト)
   ・NicoJK がブラウザのデータベースから Cookie を取得するときに利用します。
@@ -118,6 +120,7 @@ TVTest を利用する上で必須、またはあった方が良さそうなフ�
       Cookies・Local State への絶対パスを指定してください。
     ・Firefox をお使いの場合は、NicoJK.ini の execGetCookie の項目をコメントアウト後、自分のユーザー名に合わせて編集してください。
   ・https://github.com/xtne6f/NicoJK に入っている設定データを、すぐに使えるよう事前に編集した上で同梱しています。
+  ・NicoJK.ini の設定をすでに変更している場合は、アップデート時に上書きしないように注意してください。
 
 ・Plugins/NicoJK_Readme.txt … NicoJK の説明書
 
@@ -132,6 +135,7 @@ TVTest を利用する上で必須、またはあった方が良さそうなフ�
   ・もしチェックを外した（字幕を映像に合成しない）場合は、[描画方式] のところを 2: レイヤードウインドウ に変更してください。
   ・字幕を映像に合成する場合、一部の環境では字幕の描画が乱れることがあります。
   ・https://github.com/tsukumijima/TVCaptionMod2 によって生成される設定データを、すぐに使えるよう事前に編集した上で同梱しています。
+  ・TVCaptionMod2.ini の設定をすでに変更している場合は、アップデート時に上書きしないように注意してください。
 
 ・Plugins/TVCaptionMod2_Readme.txt … TVCaptionMod2 の説明書
 
@@ -149,6 +153,7 @@ TVTest を利用する上で必須、またはあった方が良さそうなフ�
       ・いわく『テレビにつなげた LAN ケーブルを一時的に引っこ抜くような機能』とのこと。
       ・このボタンで切り替えた通信機能の有効/無効の状態は、TVTest の再起動後には反映されません。
   ・https://github.com/otya128/TVTDataBroadcastingWV2 によって生成される設定データを、すぐに使えるよう事前に編集した上で同梱しています。
+  ・TVTDataBroadcastingWV2.ini の設定をすでに変更している場合は、アップデート時に上書きしないように注意してください。
 
 ・Plugins/TVTDataBroadcastingWV2_Readme.txt … TVTDataBroadcastingWV2 の説明書
 

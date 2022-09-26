@@ -1,0 +1,138 @@
+
+name: Build TVTest
+
+# 手動実行
+on: [workflow_dispatch]
+
+# ジョブの定義
+jobs:
+
+  # EDCB (32bit / 64bit) のビルド
+  build:
+    runs-on: windows-2022
+    steps:
+
+      # MSBuild のセットアップ
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      # 静的アセットの取得
+      - name: Get Assets
+        run: |
+          git clone https://github.com/${{github.repository}}.git tmp
+          cp -Path tmp/.github/workflows/assets/ -Destination Assets/ -Recurse
+
+      # EDCB のビルド
+      - name: Build EDCB
+        run: |
+          git clone -b fork https://github.com/tsukumijima/EDCB.git
+
+          # EDCB 本体のビルド
+          cd EDCB/Document/
+          msbuild EDCB_ALL.VS2015.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild EDCB_ALL.VS2015.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+
+          # EDCB 付属ツール群のビルド
+          cd ../ini/Tools/
+          msbuild misc.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild misc.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cd IBonCast/
+          msbuild IBonCast.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild IBonCast.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cd ../tsidmove/
+          msbuild tsidmove.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild tsidmove.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+
+      # EDCB のバージョンとして用いる日付を取得して保存
+      - id: version
+        name: Set EDCB Version
+        working-directory: EDCB/
+        run: |
+          $version = bash -c 'grep -E \"#define EDCB_VERSION_TAG\" Common/CommonResource.h | sed s/\\\"//g | sed \"s/#define EDCB_VERSION_TAG tkntrec-//g\"'
+          $version_date = [DateTime]::ParseExact($version, "yyMMdd", $null).ToString("yyyy/MM/dd")
+          echo "::set-output name=data::EDCB-$version"
+          echo "::set-output name=version_date::$version_date"
+
+      # パッケージングスクリプトを実行し、ビルド成果物を適切なフォルダに配置
+      - name: Arrangement Artifacts
+        run: |
+
+          # パッケージスクリプトを実行
+          mkdir Packages
+          cd EDCB/
+          bash package.sh -a x86 -t Release -o ../Packages/
+          bash package.sh -a x64 -t Release -o ../Packages/
+          cd ../
+
+          # ビルド成果物を配置
+          mkdir ${{steps.version.outputs.data}}
+          cp -Path Packages/x86/release/ -Destination ${{steps.version.outputs.data}}/EDCB_32bit/ -Recurse
+          cp -Path Packages/x64/release/ -Destination ${{steps.version.outputs.data}}/EDCB_64bit/ -Recurse
+          cp -Path Assets/EDCB/* -Destination ${{steps.version.outputs.data}}/EDCB_32bit/ -Recurse -Force
+          cp -Path Assets/EDCB/* -Destination ${{steps.version.outputs.data}}/EDCB_64bit/ -Recurse -Force
+
+          # EDCB_Build.txt を配置
+          cp -Path Assets/EDCB_Build.txt -Destination ${{steps.version.outputs.data}}/
+          bash -c "sed -i 's|%VER_DATE%|${{steps.version.outputs.version_date}}|g' ${{steps.version.outputs.data}}/EDCB_Build.txt"
+
+      # OpenSSL ライブラリのダウンロード
+      - name: Download OpenSSL Libraries
+        run: |
+          curl -LO https://web.archive.org/web/2if_/https://curl.se/windows/dl-7.78.0/openssl-1.1.1k-win32-mingw.zip
+          curl -LO https://web.archive.org/web/2if_/https://curl.se/windows/dl-7.78.0/openssl-1.1.1k-win64-mingw.zip
+          7z x -y openssl-1.1.1k-win32-mingw.zip
+          7z x -y openssl-1.1.1k-win64-mingw.zip
+          cp -Path openssl-1.1.1k-win32-mingw/libcrypto-1_1.dll -Destination ${{steps.version.outputs.data}}/EDCB_32bit/
+          cp -Path openssl-1.1.1k-win32-mingw/libssl-1_1.dll -Destination ${{steps.version.outputs.data}}/EDCB_32bit/
+          cp -Path openssl-1.1.1k-win32-mingw/openssl.exe -Destination ${{steps.version.outputs.data}}/EDCB_32bit/
+          cp -Path openssl-1.1.1k-win64-mingw/libcrypto-1_1.dll -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
+          cp -Path openssl-1.1.1k-win64-mingw/libssl-1_1.dll -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
+          cp -Path openssl-1.1.1k-win64-mingw/openssl.exe -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
+
+      # FFmpeg 4.1.4 のダウンロード
+      - name: Download FFmpeg 4.1.4
+        run: |
+          curl -LO https://web.archive.org/web/2if_/https://ffmpeg.zeranoe.com/builds/win32/shared/ffmpeg-4.1.4-win32-shared.zip
+          curl -LO https://web.archive.org/web/2if_/https://ffmpeg.zeranoe.com/builds/win64/shared/ffmpeg-4.1.4-win64-shared.zip
+          7z x -y ffmpeg-4.1.4-win32-shared.zip
+          7z x -y ffmpeg-4.1.4-win64-shared.zip
+          cp -Path ffmpeg-4.1.4-win32-shared/bin/* -Destination ${{steps.version.outputs.data}}/EDCB_32bit/Tools/
+          cp -Path ffmpeg-4.1.4-win64-shared/bin/* -Destination ${{steps.version.outputs.data}}/EDCB_64bit/Tools/
+          rm ${{steps.version.outputs.data}}/EDCB_32bit/Tools/ffplay.exe
+          rm ${{steps.version.outputs.data}}/EDCB_64bit/Tools/ffplay.exe
+
+      # psisiarc のビルド
+      - name: Build psisiarc
+        run: |
+          git clone -b master https://github.com/xtne6f/psisiarc
+          cd psisiarc/
+          msbuild psisiarc.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild psisiarc.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/psisiarc.exe -Destination ../${{steps.version.outputs.data}}/EDCB_32bit/Tools/
+          cp -Path x64/Release/psisiarc.exe -Destination ../${{steps.version.outputs.data}}/EDCB_64bit/Tools/
+
+      # tsreadex のビルド
+      - name: Build tsmemseg
+        run: |
+          git clone -b master https://github.com/xtne6f/tsmemseg
+          cd tsmemseg/
+          msbuild tsmemseg.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild tsmemseg.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/tsmemseg.exe -Destination ../${{steps.version.outputs.data}}/EDCB_32bit/Tools/
+          cp -Path x64/Release/tsmemseg.exe -Destination ../${{steps.version.outputs.data}}/EDCB_64bit/Tools/
+
+      # tsreadex のビルド
+      - name: Build tsreadex
+        run: |
+          git clone -b master https://github.com/xtne6f/tsreadex
+          cd tsreadex/
+          msbuild tsreadex.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild tsreadex.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/tsreadex.exe -Destination ../${{steps.version.outputs.data}}/EDCB_32bit/Tools/
+          cp -Path x64/Release/tsreadex.exe -Destination ../${{steps.version.outputs.data}}/EDCB_64bit/Tools/
+
+      # Artifact としてアップロード
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{steps.version.outputs.data}}/

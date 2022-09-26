@@ -56,8 +56,8 @@ jobs:
         name: Set TVTest Version
         working-directory: TVTest/
         run: |
-          $version_date = git log --no-merges --date=iso --date=format:"%y%m%d" --pretty=format:"%ad" -1
-          echo "::set-output name=data::TVTest-0.10.0-$version_date"
+          $version = git log --no-merges --date=iso --date=format:"%y%m%d" --pretty=format:"%ad" -1
+          echo "::set-output name=data::TVTest-0.10.0-$version"
 
       # パッケージングスクリプトを実行し、ビルド成果物を適切なフォルダに配置
       - name: Arrangement Artifacts
