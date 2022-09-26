@@ -23,6 +23,12 @@ jobs:
         with:
           node-version: '16'
 
+      # 静的アセットの取得
+      - name: Get Assets
+        run: |
+          git clone https://github.com/$GITHUB_REPOSITORY.git tmp
+          cp -Path tmp/.github/workflows/assets/ -Destination Assets/ -Recurse
+
       # TVTest のビルド
       - name: Build TVTest
         run: |
@@ -66,9 +72,10 @@ jobs:
 
           # ビルド成果物を配置
           mkdir ${{steps.version.outputs.data}}
-          cd ${{steps.version.outputs.data}}/
-          cp -Path ../Packages/x86/release/ -Destination TVTest_32bit/ -Recurse
-          cp -Path ../Packages/x64/release/ -Destination TVTest_64bit/ -Recurse
+          cp -Path Packages/x86/release/ -Destination ${{steps.version.outputs.data}}/TVTest_32bit/ -Recurse
+          cp -Path Packages/x64/release/ -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse
+          cp -Path Assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_32bit/ -Recurse
+          cp -Path Assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse
 
       # BonDriver_UDP / BonDriver_TCP のビルド
       - name: Build BonDriver_UDP / BonDriver_TCP
@@ -178,8 +185,7 @@ jobs:
           cd ../
           cp -Path TVCaptionMod2_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/
           cp -Path TVCaptionMod2_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
-          mkdir ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TVCaptionMod2/
-          mkdir ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TVCaptionMod2/
+          cd ../
           # TODO: TVCaptionMod2.ini を配置する
 
       # TVTDataBroadcastingWV2 のビルド
