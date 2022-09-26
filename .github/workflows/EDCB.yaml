@@ -97,8 +97,8 @@ jobs:
           cp -Path openssl-1.1.1k-win32-mingw/libcrypto-1_1.dll -Destination ${{steps.version.outputs.data}}/EDCB_32bit/
           cp -Path openssl-1.1.1k-win32-mingw/libssl-1_1.dll -Destination ${{steps.version.outputs.data}}/EDCB_32bit/
           cp -Path openssl-1.1.1k-win32-mingw/openssl.exe -Destination ${{steps.version.outputs.data}}/EDCB_32bit/
-          cp -Path openssl-1.1.1k-win64-mingw/libcrypto-1_1.dll -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
-          cp -Path openssl-1.1.1k-win64-mingw/libssl-1_1.dll -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
+          cp -Path openssl-1.1.1k-win64-mingw/libcrypto-1_1-x64.dll -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
+          cp -Path openssl-1.1.1k-win64-mingw/libssl-1_1-x64.dll -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
           cp -Path openssl-1.1.1k-win64-mingw/openssl.exe -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
 
       # Write_Multi (EdcbPlugIn 向け書き出しプラグイン) のビルド
