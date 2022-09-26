@@ -26,7 +26,7 @@ jobs:
       # 静的アセットの取得
       - name: Get Assets
         run: |
-          git clone https://github.com/$GITHUB_REPOSITORY.git tmp
+          git clone https://github.com/${GITHUB_REPOSITORY}.git tmp
           cp -Path tmp/.github/workflows/assets/ -Destination Assets/ -Recurse
 
       # TVTest のビルド
@@ -56,8 +56,8 @@ jobs:
         name: Set TVTest Version
         working-directory: TVTest/
         run: |
-          $date = git log --no-merges --date=iso --date=format:"%y%m%d" --pretty=format:"%ad" -1
-          echo "::set-output name=data::TVTest-0.10.0-$date"
+          $version_date = git log --no-merges --date=iso --date=format:"%y%m%d" --pretty=format:"%ad" -1
+          echo "::set-output name=data::TVTest-0.10.0-$version_date"
 
       # パッケージングスクリプトを実行し、ビルド成果物を適切なフォルダに配置
       - name: Arrangement Artifacts
@@ -68,6 +68,7 @@ jobs:
           cd TVTest/
           bash package.sh -a x86 -c static -l all -t Release -o ../Packages/
           bash package.sh -a x64 -c static -l all -t Release -o ../Packages/
+          $version_date = git log --no-merges --date=iso --date=format:"%Y/%m/%d" --pretty=format:"%ad" -1
           cd ../
 
           # ビルド成果物を配置
@@ -76,6 +77,10 @@ jobs:
           cp -Path Packages/x64/release/ -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse
           cp -Path Assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_32bit/ -Recurse
           cp -Path Assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse
+
+          # TVTest_Build.txt を配置
+          cp -Path Assets/TVTest_Build.txt -Destination ${{steps.version.outputs.data}}/
+          bash -c "sed -i 's|%VER_DATE%|$version_date|g' ${{steps.version.outputs.data}}/TVTest_Build.txt"
 
       # BonDriver_UDP / BonDriver_TCP のビルド
       - name: Build BonDriver_UDP / BonDriver_TCP
