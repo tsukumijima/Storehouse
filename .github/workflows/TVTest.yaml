@@ -64,8 +64,32 @@ jobs:
           cp -Path ../Packages/x86/release/ -Destination TVTest_32bit/ -Recurse
           cp -Path ../Packages/x64/release/ -Destination TVTest_64bit/ -Recurse
 
-      # TvCas (B25.tvcas/B1.tvcas) のビルド
-      - name: Build TvCas (B25.tvcas/B1.tvcas)
+      # BonDriver_UDP / BonDriver_TCP のビルド
+      - name: Build BonDriver_UDP / BonDriver_TCP
+        run: |
+          git clone -b master https://github.com/tsukumijima/BonDriver_UDP-TCP.git
+          cd BonDriver_UDP-TCP/
+          msbuild BonDriver_ALL.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild BonDriver_ALL.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/BonDriver_UDP.dll -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path Release/BonDriver_TCP.dll -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path x64/Release/BonDriver_UDP.dll -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
+          cp -Path x64/Release/BonDriver_TCP.dll -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
+          cp -Path BonDriver_UDP.txt -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path BonDriver_UDP.txt -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
+
+      # jkcnsl (NicoJK の動作に必要) をビルド
+      - name: Build jkcnsl
+        run: |
+          git clone -b master https://github.com/xtne6f/jkcnsl.git
+          cd jkcnsl/
+          dotnet publish -c Release -r win10-x86 /p:PublishSingleFile=true /p:PublishTrimmed=true
+          dotnet publish -c Release -r win10-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true
+          cp -Path bin\Release\netcoreapp3.1\win10-x86\publish\jkcnsl.exe -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path bin\Release\netcoreapp3.1\win10-x64\publish\jkcnsl.exe -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/
+
+      # TvCas (B25.tvcas / B1.tvcas) のビルド
+      - name: Build TvCas (B25.tvcas / B1.tvcas)
         run: |
           git clone -b master https://github.com/tsukumijima/TvCas.git
           cd TvCas/
@@ -136,7 +160,7 @@ jobs:
           # TODO: TVCaptionMod2.ini を配置する
 
       # TvtPlay のビルド
-      - name: Build TVCaptionMod2
+      - name: Build TvtPlay
         run: |
           git clone -b work-plus https://github.com/xtne6f/TvtPlay.git
 
