@@ -16,11 +16,6 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
 
-      # .NET Framework 4.5 のセットアップ
-      - uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: '4.5.2'
-
       # 静的アセットの取得
       - name: Get Assets
         run: |
