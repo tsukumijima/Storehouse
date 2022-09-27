@@ -119,7 +119,7 @@ jobs:
       # TvCas (B25.tvcas / B1.tvcas) のビルド
       - name: Build TvCas (B25.tvcas / B1.tvcas)
         run: |
-          git clone -b master https://github.com/tsukumijima/TvCas.git
+          git clone -b fork https://github.com/tsukumijima/TvCas.git
           cd TvCas/
           msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
           msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
