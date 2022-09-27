@@ -72,6 +72,8 @@ jobs:
           cp -Path Assets/EDCB/* -Destination ${{steps.version.outputs.data}}/EDCB_64bit/ -Recurse -Force
           mkdir ${{steps.version.outputs.data}}/EDCB_32bit/BonDriver/ -Force
           mkdir ${{steps.version.outputs.data}}/EDCB_64bit/BonDriver/ -Force
+          mv -Path ${{steps.version.outputs.data}}/EDCB_32bit/LICENSE-Civetweb.md -Destination ${{steps.version.outputs.data}}/EDCB_32sbit/License_CivetWeb.md
+          mv -Path ${{steps.version.outputs.data}}/EDCB_64bit/LICENSE-Civetweb.md -Destination ${{steps.version.outputs.data}}/EDCB_64bit/License_CivetWeb.md
 
           # EDCB_Build.txt を配置
           cp -Path Assets/EDCB_Build.txt -Destination ${{steps.version.outputs.data}}/
