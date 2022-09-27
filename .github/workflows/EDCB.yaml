@@ -186,9 +186,14 @@ jobs:
           cp -Path Release/tsreadex.exe -Destination ../${{steps.version.outputs.data}}/EDCB_32bit/Tools/
           cp -Path x64/Release/tsreadex.exe -Destination ../${{steps.version.outputs.data}}/EDCB_64bit/Tools/
 
+      # EDCB のビルドアーカイブを zip で圧縮
+      - name: Compress EDCB Archives
+        run: |
+          7z a -tzip -mx=9 ${{steps.version.outputs.data}}.zip ${{steps.version.outputs.data}}/
+
       # Artifact としてアップロード
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{steps.version.outputs.data}}
-          path: ${{steps.version.outputs.data}}/
+          name: ${{steps.version.outputs.data}}.zip
+          path: ${{steps.version.outputs.data}}.zip
