@@ -16,6 +16,11 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
 
+      # .NET Framework 4.5 のセットアップ
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '4.5.0'
+
       # 静的アセットの取得
       - name: Get Assets
         run: |
@@ -70,6 +75,8 @@ jobs:
           cp -Path Packages/x64/release/ -Destination ${{steps.version.outputs.data}}/EDCB_64bit/ -Recurse
           cp -Path Assets/EDCB/* -Destination ${{steps.version.outputs.data}}/EDCB_32bit/ -Recurse -Force
           cp -Path Assets/EDCB/* -Destination ${{steps.version.outputs.data}}/EDCB_64bit/ -Recurse -Force
+          mkdir ${{steps.version.outputs.data}}/EDCB_32bit/BonDriver/
+          mkdir ${{steps.version.outputs.data}}/EDCB_64bit/BonDriver/
 
           # EDCB_Build.txt を配置
           cp -Path Assets/EDCB_Build.txt -Destination ${{steps.version.outputs.data}}/
@@ -166,4 +173,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
+          name: ${{steps.version.outputs.data}}.zip
           path: ${{steps.version.outputs.data}}/
