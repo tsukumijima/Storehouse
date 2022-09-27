@@ -272,5 +272,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{steps.version.outputs.data}}.zip
+          name: ${{steps.version.outputs.data}}
           path: ${{steps.version.outputs.data}}/
