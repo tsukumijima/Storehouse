@@ -19,7 +19,7 @@ jobs:
       # .NET Framework 4.5 のセットアップ
       - uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '4.5.0'
+          dotnet-version: '4.5.2'
 
       # 静的アセットの取得
       - name: Get Assets
@@ -107,6 +107,28 @@ jobs:
           cp -Path openssl-1.1.1k-win64-mingw/libcrypto-1_1-x64.dll -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
           cp -Path openssl-1.1.1k-win64-mingw/libssl-1_1-x64.dll -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
           cp -Path openssl-1.1.1k-win64-mingw/openssl.exe -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
+
+      # Lua 5.2 のダウンロード
+      - name: Download Lua 5.2
+        run: |
+          curl -LO https://master.dl.sourceforge.net/project/luabinaries/5.2.4/Windows%20Libraries/Dynamic/lua-5.2.4_Win32_dllw6_lib.zip
+          curl -LO https://master.dl.sourceforge.net/project/luabinaries/5.2.4/Windows%20Libraries/Dynamic/lua-5.2.4_Win64_dllw6_lib.zip
+          7z x -y lua-5.2.4_Win32_dllw6_lib.zip
+          cp -Path lua52.dll -Destination ${{steps.version.outputs.data}}/EDCB_32bit/
+          7z x -y lua-5.2.4_Win64_dllw6_lib.zip
+          cp -Path lua52.dll -Destination ${{steps.version.outputs.data}}/EDCB_64bit/
+
+      # lua-zlib のビルド
+      - name: Build zlib
+        run: |
+          curl -LO https://github.com/xtne6f/EDCB/releases/download/work-plus-s-220921/EDCB-work-plus-s-bin.zip
+          7z x -y EDCB-work-plus-s-bin.zip
+          7z x -y -o"lua-zlib/" lua-zlib-0.5-zlib-1.2.12-src.7z
+          cd lua-zlib/
+          msbuild lua-zlib.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild lua-zlib.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path Release/zlib.dll -Destination ../${{steps.version.outputs.data}}/EDCB_32bit/
+          cp -Path x64/Release/zlib.dll -Destination ../${{steps.version.outputs.data}}/EDCB_64bit/
 
       # Write_Multi (EdcbPlugIn 向け書き出しプラグイン) のビルド
       - name: Build Write_Multi
