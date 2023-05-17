@@ -87,7 +87,7 @@ jobs:
           cp -Path DTV-Builds/.github/workflows/assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse -Force
 
           # TVTest_Build.txt を配置
-          bash -c "sed -i 's|%VER_DATE%|$version_date|g' DTV-Builds/TVTest_Build.txt"
+          bash -c "sed -i 's| - [0-9]\{4\}/[0-9]\{2\}/[0-9]\{2\}| - $version_date|g' DTV-Builds/TVTest_Build.txt"
           cp -Path DTV-Builds/TVTest_Build.txt -Destination ${{steps.version.outputs.data}}/
 
       # BonDriver_UDP / BonDriver_TCP のビルド

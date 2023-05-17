@@ -84,7 +84,7 @@ jobs:
           mv -Path ${{steps.version.outputs.data}}/EDCB_64bit/LICENSE-Civetweb.md -Destination ${{steps.version.outputs.data}}/EDCB_64bit/License_CivetWeb.md
 
           # EDCB_Build.txt を配置
-          bash -c "sed -i 's|%VER_DATE%|${{steps.version.outputs.version_date}}|g' DTV-Builds/EDCB_Build.txt"
+          bash -c "sed -i 's| - [0-9]\{4\}/[0-9]\{2\}/[0-9]\{2\}| - $version_date|g' DTV-Builds/EDCB_Build.txt"
           cp -Path DTV-Builds/EDCB_Build.txt -Destination ${{steps.version.outputs.data}}/
 
       # libaribb25 (B25Decoder.dll / B1Decoder.dll) のビルド
