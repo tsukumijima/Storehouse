@@ -4,6 +4,11 @@ name: Build TVTest
 # 手動実行
 on:
   workflow_dispatch:
+    inputs:
+      update_repository:
+        type: boolean
+        required: true
+        description: 'リポジトリにビルド済みアーカイブを追加・更新するかどうか'
 
 # ジョブの定義
 jobs:
@@ -14,6 +19,14 @@ jobs:
     runs-on: windows-2019
     steps:
 
+      # リポジトリのチェックアウト
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          path: DTV-Builds/
+          fetch-depth: 0
+          token: ${{ secrets.GIT_PUSH_TOKEN }}
+
       # MSBuild のセットアップ
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.3.1
@@ -23,12 +36,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16'
-
-      # 静的アセットの取得
-      - name: Get Assets
-        run: |
-          git clone https://github.com/${{github.repository}}.git DTV-Builds
-          cp -Path DTV-Builds/.github/workflows/assets/ -Destination Assets/ -Recurse
 
       # TVTest のビルド
       - name: Build TVTest
@@ -76,13 +83,12 @@ jobs:
           mkdir ${{steps.version.outputs.data}}
           cp -Path Packages/x86/release/ -Destination ${{steps.version.outputs.data}}/TVTest_32bit/ -Recurse
           cp -Path Packages/x64/release/ -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse
-          cp -Path Assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_32bit/ -Recurse -Force
-          cp -Path Assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse -Force
+          cp -Path DTV-Builds/.github/workflows/assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_32bit/ -Recurse -Force
+          cp -Path DTV-Builds/.github/workflows/assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse -Force
 
           # TVTest_Build.txt を配置
-          cp -Path Assets/TVTest_Build.txt -Destination ${{steps.version.outputs.data}}/
-          bash -c "sed -i 's|%VER_DATE%|$version_date|g' ${{steps.version.outputs.data}}/TVTest_Build.txt"
-          cp -Path ${{steps.version.outputs.data}}/TVTest_Build.txt -Destination DTV-Builds/.github/workflows/assets/TVTest_Build.txt
+          bash -c "sed -i 's|%VER_DATE%|$version_date|g' DTV-Builds/TVTest_Build.txt"
+          cp -Path DTV-Builds/TVTest_Build.txt -Destination ${{steps.version.outputs.data}}/
 
       # BonDriver_UDP / BonDriver_TCP のビルド
       - name: Build BonDriver_UDP / BonDriver_TCP
@@ -196,10 +202,9 @@ jobs:
           cp -Path TVCaptionMod2_Readme.txt -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/
 
       # TVTDataBroadcastingWV2 のビルド
-      # ref: https://github.com/otya128/TVTDataBroadcastingWV2/blob/master/.github/workflows/msbuild.yml
       - name: Build TVTDataBroadcastingWV2
         run: |
-          git clone -b master --recursive https://github.com/otya128/TVTDataBroadcastingWV2.git
+          git clone -b master --recursive https://github.com/tsukumijima/TVTDataBroadcastingWV2.git
           cd TVTDataBroadcastingWV2/
           nuget restore ./
           msbuild TVTDataBroadcastingWV2.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
@@ -214,7 +219,6 @@ jobs:
         run: |
           cd TVTDataBroadcastingWV2/browser/
           yarn install
-          yarn workspace @chinachu/aribts build
           yarn run build
           mkdir ../../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/TVTDataBroadcastingWV2/resources/dist/
           mkdir ../../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/TVTDataBroadcastingWV2/resources/dist/
@@ -284,3 +288,16 @@ jobs:
         with:
           name: ${{steps.version.outputs.data}}.zip
           path: ${{steps.version.outputs.data}}.zip
+
+      # update_repository にチェックが入っているときのみ、ビルド済みアーカイブを追加してコミット
+      - name: Update Repository
+        working-directory: DTV-Builds/
+        if: ${{ github.event.inputs.update_repository == 'true' }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+          cp -Path ../${{steps.version.outputs.data}}.zip -Destination ./
+          git add .
+          git commit -m "Add ${{steps.version.outputs.data}}"
+          git push -u origin master

@@ -4,6 +4,11 @@ name: Build EDCB
 # 手動実行
 on:
   workflow_dispatch:
+    inputs:
+      update_repository:
+        type: boolean
+        required: true
+        description: 'リポジトリにビルド済みアーカイブを追加・更新するかどうか'
 
 # ジョブの定義
 jobs:
@@ -13,15 +18,17 @@ jobs:
     runs-on: windows-2019
     steps:
 
+      # リポジトリのチェックアウト
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          path: DTV-Builds/
+          fetch-depth: 0
+          token: ${{ secrets.GIT_PUSH_TOKEN }}
+
       # MSBuild のセットアップ
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.3.1
-
-      # 静的アセットの取得
-      - name: Get Assets
-        run: |
-          git clone https://github.com/${{github.repository}}.git DTV-Builds
-          cp -Path DTV-Builds/.github/workflows/assets/ -Destination Assets/ -Recurse
 
       # EDCB のビルド
       - name: Build EDCB
@@ -69,17 +76,16 @@ jobs:
           mkdir ${{steps.version.outputs.data}}
           cp -Path Packages/x86/release/ -Destination ${{steps.version.outputs.data}}/EDCB_32bit/ -Recurse
           cp -Path Packages/x64/release/ -Destination ${{steps.version.outputs.data}}/EDCB_64bit/ -Recurse
-          cp -Path Assets/EDCB/* -Destination ${{steps.version.outputs.data}}/EDCB_32bit/ -Recurse -Force
-          cp -Path Assets/EDCB/* -Destination ${{steps.version.outputs.data}}/EDCB_64bit/ -Recurse -Force
+          cp -Path DTV-Builds/.github/workflows/assets/EDCB/* -Destination ${{steps.version.outputs.data}}/EDCB_32bit/ -Recurse -Force
+          cp -Path DTV-Builds/.github/workflows/assets/EDCB/* -Destination ${{steps.version.outputs.data}}/EDCB_64bit/ -Recurse -Force
           mkdir ${{steps.version.outputs.data}}/EDCB_32bit/BonDriver/ -Force
           mkdir ${{steps.version.outputs.data}}/EDCB_64bit/BonDriver/ -Force
           mv -Path ${{steps.version.outputs.data}}/EDCB_32bit/LICENSE-Civetweb.md -Destination ${{steps.version.outputs.data}}/EDCB_32bit/License_CivetWeb.md
           mv -Path ${{steps.version.outputs.data}}/EDCB_64bit/LICENSE-Civetweb.md -Destination ${{steps.version.outputs.data}}/EDCB_64bit/License_CivetWeb.md
 
           # EDCB_Build.txt を配置
-          cp -Path Assets/EDCB_Build.txt -Destination ${{steps.version.outputs.data}}/
-          bash -c "sed -i 's|%VER_DATE%|${{steps.version.outputs.version_date}}|g' ${{steps.version.outputs.data}}/EDCB_Build.txt"
-          cp -Path ${{steps.version.outputs.data}}/EDCB_Build.txt -Destination DTV-Builds/.github/workflows/assets/EDCB_Build.txt
+          bash -c "sed -i 's|%VER_DATE%|${{steps.version.outputs.version_date}}|g' DTV-Builds/EDCB_Build.txt"
+          cp -Path DTV-Builds/EDCB_Build.txt -Destination ${{steps.version.outputs.data}}/
 
       # libaribb25 (B25Decoder.dll / B1Decoder.dll) のビルド
       - name: Build libaribb25 (B25Decoder.dll / B1Decoder.dll)
@@ -199,3 +205,16 @@ jobs:
         with:
           name: ${{steps.version.outputs.data}}.zip
           path: ${{steps.version.outputs.data}}.zip
+
+      # update_repository にチェックが入っているときのみ、ビルド済みアーカイブを追加してコミット
+      - name: Update Repository
+        working-directory: DTV-Builds/
+        if: ${{ github.event.inputs.update_repository == 'true' }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+          cp -Path ../${{steps.version.outputs.data}}.zip -Destination ./
+          git add .
+          git commit -m "Add ${{steps.version.outputs.data}}"
+          git push -u origin master
