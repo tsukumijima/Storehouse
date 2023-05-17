@@ -65,7 +65,7 @@ jobs:
         working-directory: TVTest/
         run: |
           $version = git log --no-merges --date=iso --date=format:"%y%m%d" --pretty=format:"%ad" -1
-          echo "data=TVTest-0.10.0-$version" >> $GITHUB_OUTPUT
+          echo "data=TVTest-0.10.0-$version" >> $ENV:GITHUB_OUTPUT
 
       # パッケージングスクリプトを実行し、ビルド成果物を適切なフォルダに配置
       - name: Arrangement Artifacts
