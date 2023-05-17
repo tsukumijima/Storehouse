@@ -14,18 +14,18 @@ jobs:
 
       # MSBuild のセットアップ
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@v1.3.1
 
       # 静的アセットの取得
       - name: Get Assets
         run: |
-          git clone https://github.com/${{github.repository}}.git tmp
-          cp -Path tmp/.github/workflows/assets/ -Destination Assets/ -Recurse
+          git clone https://github.com/${{github.repository}}.git DTV-Builds
+          cp -Path DTV-Builds/.github/workflows/assets/ -Destination Assets/ -Recurse
 
       # EDCB のビルド
       - name: Build EDCB
         run: |
-          git clone -b fork https://github.com/tsukumijima/EDCB.git
+          git clone -b master https://github.com/tsukumijima/EDCB.git
 
           # EDCB 本体のビルド
           cd EDCB/Document/

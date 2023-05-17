@@ -15,7 +15,7 @@ jobs:
 
       # MSBuild のセットアップ
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@v1.3.1
 
       # Node.js 16 のセットアップ
       - name: Setup Node.js 16
@@ -26,8 +26,8 @@ jobs:
       # 静的アセットの取得
       - name: Get Assets
         run: |
-          git clone https://github.com/${{github.repository}}.git tmp
-          cp -Path tmp/.github/workflows/assets/ -Destination Assets/ -Recurse
+          git clone https://github.com/${{github.repository}}.git DTV-Builds
+          cp -Path DTV-Builds/.github/workflows/assets/ -Destination Assets/ -Recurse
 
       # TVTest のビルド
       - name: Build TVTest
@@ -111,15 +111,15 @@ jobs:
         run: |
           curl -L -o ${{steps.version.outputs.data}}/TVTest_32bit/jq.exe https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win32.exe
           curl -L -o ${{steps.version.outputs.data}}/TVTest_64bit/jq.exe https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe
-          curl -L -o sqlite.zip https://www.sqlite.org/2022/sqlite-tools-win32-x86-3390300.zip
+          curl -L -o sqlite.zip https://www.sqlite.org/2022/sqlite-tools-win32-x86-3420000.zip
           7z x -y sqlite.zip
-          cp -Path sqlite-tools-win32-x86-3390300/sqlite3.exe -Destination ${{steps.version.outputs.data}}/TVTest_32bit/
-          cp -Path sqlite-tools-win32-x86-3390300/sqlite3.exe -Destination ${{steps.version.outputs.data}}/TVTest_64bit/
+          cp -Path sqlite-tools-win32-x86-3420000/sqlite3.exe -Destination ${{steps.version.outputs.data}}/TVTest_32bit/
+          cp -Path sqlite-tools-win32-x86-3420000/sqlite3.exe -Destination ${{steps.version.outputs.data}}/TVTest_64bit/
 
       # TvCas (B25.tvcas / B1.tvcas) のビルド
       - name: Build TvCas (B25.tvcas / B1.tvcas)
         run: |
-          git clone -b fork https://github.com/tsukumijima/TvCas.git
+          git clone -b master https://github.com/tsukumijima/TvCas.git
           cd TvCas/
           msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
           msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
@@ -174,6 +174,8 @@ jobs:
           mkdir ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/NicoJK/
           cp -Path Release/jkimlog.exe -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/NicoJK/
           cp -Path x64/Release/jkimlog.exe -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/NicoJK/
+          cp -Path Release/jkrdlog.exe -Destination ../${{steps.version.outputs.data}}/TVTest_32bit/Plugins/NicoJK/
+          cp -Path x64/Release/jkrdlog.exe -Destination ../${{steps.version.outputs.data}}/TVTest_64bit/Plugins/NicoJK/
 
       # TVCaptionMod2 のビルド
       - name: Build TVCaptionMod2
