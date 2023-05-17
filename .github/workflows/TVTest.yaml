@@ -2,7 +2,8 @@
 name: Build TVTest
 
 # 手動実行
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
 
 # ジョブの定義
 jobs:
@@ -81,6 +82,7 @@ jobs:
           # TVTest_Build.txt を配置
           cp -Path Assets/TVTest_Build.txt -Destination ${{steps.version.outputs.data}}/
           bash -c "sed -i 's|%VER_DATE%|$version_date|g' ${{steps.version.outputs.data}}/TVTest_Build.txt"
+          cp -Path ${{steps.version.outputs.data}}/TVTest_Build.txt -Destination DTV-Builds/.github/workflows/assets/TVTest_Build.txt
 
       # BonDriver_UDP / BonDriver_TCP のビルド
       - name: Build BonDriver_UDP / BonDriver_TCP
