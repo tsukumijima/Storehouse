@@ -113,7 +113,7 @@ jobs:
         run: |
           curl -L -o ${{steps.version.outputs.data}}/TVTest_32bit/jq.exe https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win32.exe
           curl -L -o ${{steps.version.outputs.data}}/TVTest_64bit/jq.exe https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe
-          curl -L -o sqlite.zip https://www.sqlite.org/2022/sqlite-tools-win32-x86-3420000.zip
+          curl -L -o sqlite.zip https://www.sqlite.org/2023/sqlite-tools-win32-x86-3420000.zip
           7z x -y sqlite.zip
           cp -Path sqlite-tools-win32-x86-3420000/sqlite3.exe -Destination ${{steps.version.outputs.data}}/TVTest_32bit/
           cp -Path sqlite-tools-win32-x86-3420000/sqlite3.exe -Destination ${{steps.version.outputs.data}}/TVTest_64bit/
