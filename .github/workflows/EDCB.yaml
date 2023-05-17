@@ -8,7 +8,7 @@ on:
       update_repository:
         type: boolean
         required: true
-        description: 'リポジトリにビルド済みアーカイブを追加・更新するかどうか'
+        description: 'リポジトリにビルド済みアーカイブを追加・更新する (本番用)'
 
 # ジョブの定義
 jobs:
