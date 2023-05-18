@@ -214,6 +214,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
+          git pull
           cp -Path ../${{steps.version.outputs.data}}.zip -Destination ./
           git add .
           git commit -m "Add ${{steps.version.outputs.data}}"
