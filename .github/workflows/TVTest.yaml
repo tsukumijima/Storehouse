@@ -294,8 +294,9 @@ jobs:
         working-directory: DTV-Builds/
         if: ${{ github.event.inputs.update_repository == 'true' }}
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --global core.autocrlf false
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
           git pull
           cp -Path ../${{steps.version.outputs.data}}.zip -Destination ./
