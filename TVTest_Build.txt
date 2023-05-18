@@ -29,14 +29,14 @@
 
 TVTest を利用する上で必須、またはあった方が良さそうなファイル・プラグインを一緒に同梱しています。
 
-・B25.tvcas … CasProcessor プラグインが利用する CAS 処理用 tvcas プラグイン ( TVCAS_B25.tvcas と同様)
+・B25.tvcas … CasProcessor プラグインが利用する CAS 処理用 tvcas プラグイン (TVCAS_B25.tvcas と同様)
   ・地上波・BS・CS110 の再生に利用します。
   ・https://github.com/tsukumijima/TvCas をビルドしたものを同梱しています。
 
-・B1.tvcas … CasProcessor プラグインが利用する CAS 処理用 tvcas プラグイン ( TVCAS_B1.tvcas と同様)
+・B1.tvcas … CasProcessor プラグインが利用する CAS 処理用 tvcas プラグイン (TVCAS_B1.tvcas と同様)
   ・スカパー！プレミアムサービス (SPHD) の再生に利用します。
   ・https://github.com/tsukumijima/TvCas をビルドしたものを同梱しています。
-  ・以前のバージョンで同梱していた SPHD.tvcas は機能しないものだったため、独自にパッチを適用し SPHD 対応を行いました。
+  ・以前同梱していた SPHD.tvcas は機能しないものだったため、独自にパッチを適用し SPHD 対応を行いました。
 
 ・BonDriver_Pipe.dll … 名前付きパイプ経由で TS ストリームを再生できる特殊な BonDriver
   ・主に TvtPlay での録画ファイル再生に利用します。
@@ -126,6 +126,8 @@ TVTest を利用する上で必須、またはあった方が良さそうなフ�
 
 ・Plugins/NicoJK/jkimlog.exe … 外部のログファイルを NicoJK フォルダに取り込むコマンドラインツール
 
+・Plugins/NicoJK/jkrdlog.exe … 保存済みのログデータをニコニコ実況 ID やチャンネルと時間指定で絞り込んで出力するコマンドラインツール
+
 ・Plugins/TVCaptionMod2.tvtp … 字幕を表示できる TVTest のプラグイン
   ・右クリックメニューから有効 / 無効の切り替えができます。
   ・https://github.com/tsukumijima/TVCaptionMod2 をビルドしたものを同梱しています。
@@ -144,7 +146,7 @@ TVTest を利用する上で必須、またはあった方が良さそうなフ�
   ・プラグインを有効にした状態でパネル設定から『データ放送』を有効にすると、パネルの『データ放送』タブにデータ放送用のリモコンが表示されます。
   ・キー割り当て設定から、データ放送のリモコン操作にショートカットキーを割り当てられます。
   ・各データ放送の NVRAM データは Plugins/TVTDataBroadcastingWV2/WebView2Data/ に保存されます。
-  ・https://github.com/otya128/TVTDataBroadcastingWV2 をビルドしたものを同梱しています。
+  ・https://github.com/tsukumijima/TVTDataBroadcastingWV2 をビルドしたものを同梱しています。
 
 ・Plugins/TVTDataBroadcastingWV2.ini … TVTDataBroadcastingWV2 の設定ファイル
   ・データ放送のうち、双方向通信機能（通信コンテンツ）は既定で無効化されています。
@@ -152,7 +154,7 @@ TVTest を利用する上で必須、またはあった方が良さそうなフ�
     ・リモコン下の『通信機能を無効化』/ 『通信機能を有効化』ボタンは、一時的に通信機能を無効化/有効化するためのボタンです。
       ・いわく『テレビにつなげた LAN ケーブルを一時的に引っこ抜くような機能』とのこと。
       ・このボタンで切り替えた通信機能の有効/無効の状態は、TVTest の再起動後には反映されません。
-  ・https://github.com/otya128/TVTDataBroadcastingWV2 によって生成される設定データを、すぐに使えるよう事前に編集した上で同梱しています。
+  ・https://github.com/tsukumijima/TVTDataBroadcastingWV2 によって生成される設定データを、すぐに使えるよう事前に編集した上で同梱しています。
   ・TVTDataBroadcastingWV2.ini の設定をすでに変更している場合は、アップデート時に上書きしないように注意してください。
 
 ・Plugins/TVTDataBroadcastingWV2_Readme.txt … TVTDataBroadcastingWV2 の説明書

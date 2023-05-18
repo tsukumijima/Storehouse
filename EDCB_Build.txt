@@ -31,7 +31,7 @@ EDCB を利用する上で必須、またはあった方が良さそうなファ
 
 ・lua52.dll / zlib.dll … EDCB Material WebUI を動作させるために必要なライブラリ
   ・このライブラリがないと EDCB Material WebUI は動作しません。
-  ・EDCB-Work-Plus-s (https://github.com/xtne6f/EDCB/releases) に入っているものを同梱しています。
+  ・https://github.com/xtne6f/lua・https://github.com/xtne6f/lua-zlib をビルドしたものを同梱しています。
 
 ・libcrypto-1_1(-x64).dll / libssl-1_1(-x64).dll / openssl.exe … EDCB Material WebUI を HTTPS で動作させるために必要なライブラリ
   ・HTTP で動作させる場合はこのライブラリがなくても動作しますが、HTTPS で動作させる場合は必須です。
