@@ -87,8 +87,8 @@ jobs:
           cp -Path DTV-Builds/.github/workflows/assets/TVTest/* -Destination ${{steps.version.outputs.data}}/TVTest_64bit/ -Recurse -Force
 
           # TVTest_Build.txt を配置
-          bash -c "sed -i 's| - [0-9]\{4\}/[0-9]\{2\}/[0-9]\{2\}| - $version_date|g' DTV-Builds/TVTest_Build.txt"
           cp -Path DTV-Builds/TVTest_Build.txt -Destination ${{steps.version.outputs.data}}/
+          bash -c "sed -i 's| - [0-9]\{4\}/[0-9]\{2\}/[0-9]\{2\}| - $version_date|g' ${{steps.version.outputs.data}}/TVTest_Build.txt"
 
       # BonDriver_UDP / BonDriver_TCP のビルド
       - name: Build BonDriver_UDP / BonDriver_TCP
@@ -299,6 +299,7 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
           git pull
+          cp -Path ../${{steps.version.outputs.data}}/TVTest_Build.txt -Destination ./
           cp -Path ../${{steps.version.outputs.data}}.zip -Destination ./
           git add .
           git commit -m "Add ${{steps.version.outputs.data}}"
