@@ -25,6 +25,7 @@ jobs:
       # TvCas (B25.tvcas / B1.tvcas) のビルド
       - name: Build TvCas (B25.tvcas / B1.tvcas)
         run: |
+          chcp 932
           git clone -b master https://github.com/tsukumijima/TvCas.git
           cd TvCas/
           msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
@@ -32,6 +33,7 @@ jobs:
       # CasProcessor のビルド
       - name: Build CasProcessor
         run: |
+          chcp 932
           git clone -b master https://github.com/tsukumijima/CasProcessor.git
           cd CasProcessor/
           msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
