@@ -22,6 +22,8 @@ jobs:
           git clone -b master https://github.com/tsukumijima/TvCas.git
           cd TvCas/
           msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          cp -Path x64/Release/B1.tvcas -Destination ../
+          cp -Path x64/Release/B25.tvcas -Destination ../
 
       # CasProcessor のビルド
       - name: Build CasProcessor
@@ -29,6 +31,8 @@ jobs:
           git clone -b master https://github.com/tsukumijima/CasProcessor.git
           cd CasProcessor/
           msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+          mkdir ../Plugins
+          cp -Path x64/Release/CasProcessor.tvtp -Destination ../Plugins
 
       # Artifact としてアップロード
       - name: Upload Artifact
@@ -36,6 +40,6 @@ jobs:
         with:
           name: CasProcessor-and-TvCas.zip
           path: |
-            TvCas/x64/Release/B1.tvcas
-            TvCas/x64/Release/B25.tvcas
-            CasProcessor/x64/Release/CasProcessor.tvtp
+            B1.tvcas
+            B25.tvcas
+            Plugins/CasProcessor.tvtp
