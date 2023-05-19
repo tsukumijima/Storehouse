@@ -1,0 +1,51 @@
+
+name: Build CasProcessor
+
+# 手動実行
+on:
+  workflow_dispatch:
+
+# ジョブの定義
+jobs:
+
+  build:
+    runs-on: windows-2019
+    steps:
+
+      # リポジトリのチェックアウト
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          path: DTV-Builds/
+          fetch-depth: 0
+          token: ${{ secrets.GIT_PUSH_TOKEN }}
+
+      # MSBuild のセットアップ
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.3.1
+
+      # TvCas (B25.tvcas / B1.tvcas) のビルド
+      - name: Build TvCas (B25.tvcas / B1.tvcas)
+        run: |
+          git clone -b master https://github.com/tsukumijima/TvCas.git
+          cd TvCas/
+          msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
+          msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+
+      # CasProcessor のビルド
+      - name: Build CasProcessor
+        run: |
+          git clone -b master https://github.com/tsukumijima/CasProcessor.git
+          cd CasProcessor/
+          msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
+          msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+
+      # Artifact としてアップロード
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: CasProcessor-and-TvCas.zip
+          path: |
+            TvCas/x64/Release/B1.tvcas
+            TvCas/x64/Release/B25.tvcas
+            CasProcessor/x64/Release/CasProcessor.tvtp
