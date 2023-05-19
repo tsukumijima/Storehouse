@@ -25,6 +25,8 @@ jobs:
       # TvCas (B25.tvcas / B1.tvcas) のビルド
       - name: Build TvCas (B25.tvcas / B1.tvcas)
         run: |
+          Set-WinSystemLocale ja-JP
+          Set-Culture ja-JP
           chcp 932
           git clone -b master https://github.com/tsukumijima/TvCas.git
           cd TvCas/
@@ -33,6 +35,8 @@ jobs:
       # CasProcessor のビルド
       - name: Build CasProcessor
         run: |
+          Set-WinSystemLocale ja-JP
+          Set-Culture ja-JP
           chcp 932
           git clone -b master https://github.com/tsukumijima/CasProcessor.git
           cd CasProcessor/
