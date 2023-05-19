@@ -27,7 +27,6 @@ jobs:
         run: |
           git clone -b master https://github.com/tsukumijima/TvCas.git
           cd TvCas/
-          msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x86 /p:PlatformToolset=v142
           msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
 
       # CasProcessor のビルド
@@ -35,7 +34,6 @@ jobs:
         run: |
           git clone -b master https://github.com/tsukumijima/CasProcessor.git
           cd CasProcessor/
-          msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=Win32 /p:PlatformToolset=v142
           msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
 
       # Artifact としてアップロード
