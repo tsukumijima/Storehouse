@@ -16,18 +16,9 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.3.1
 
-      - name: Set Locale
-        run: |
-          $cultureInfo = [System.Globalization.CultureInfo]::GetCultureInfo("ja-JP")
-          [System.Threading.Thread]::CurrentThread.CurrentCulture = $cultureInfo
-          [System.Threading.Thread]::CurrentThread.CurrentUICulture = $cultureInfo
-
       # TvCas (B25.tvcas / B1.tvcas) のビルド
       - name: Build TvCas (B25.tvcas / B1.tvcas)
         run: |
-          Set-WinSystemLocale ja-JP
-          Set-Culture ja-JP
-          chcp 932
           git clone -b master https://github.com/tsukumijima/TvCas.git
           cd TvCas/
           msbuild TvCas.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
@@ -35,9 +26,6 @@ jobs:
       # CasProcessor のビルド
       - name: Build CasProcessor
         run: |
-          Set-WinSystemLocale ja-JP
-          Set-Culture ja-JP
-          chcp 932
           git clone -b master https://github.com/tsukumijima/CasProcessor.git
           cd CasProcessor/
           msbuild CasProcessor.sln /t:Build /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
